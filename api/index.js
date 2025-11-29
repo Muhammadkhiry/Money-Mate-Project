@@ -40,7 +40,7 @@ app.post('/register', async (req, res) => {
     email,
     phone,
     user_address,
-    user_type,       
+    user_type,
     gender,
     com_type,
     registration_number
@@ -66,13 +66,22 @@ app.post('/register', async (req, res) => {
       const e = exists.recordset[0];
 
       if (e.username === username) {
-        return res.status(400).json({ error: "Username is already taken" });
+        return res.status(400).json({
+          success: false,
+          message: "Username is already taken"
+        });
       }
       if (e.email === email) {
-        return res.status(400).json({ error: "Email already exists" });
+        return res.status(400).json({
+          success: false,
+          message: "Email already exists"
+        });
       }
       if (e.phone === phone) {
-        return res.status(400).json({ error: "Phone number already exists" });
+        return res.status(400).json({
+          success: false,
+          message: "Phone number already exists"
+        });
       }
     }
 
@@ -115,11 +124,18 @@ app.post('/register', async (req, res) => {
         `);
     }
 
-    res.status(201).json({ message: "User registered successfully", userId });
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      data: { userId },
+    });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 });
 
@@ -141,7 +157,10 @@ app.post('/login', async (req, res) => {
       `);
 
     if (userResult.recordset.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
     }
 
     const user = userResult.recordset[0];
@@ -150,11 +169,15 @@ app.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.user_password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid password',
+      });
     }
 
     // Send success response with user info
     res.json({
+      success: true,
       message: 'Login successful',
       user: {
         userid: user.userid,
@@ -166,7 +189,10 @@ app.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: 'Something went wrong during login' });
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong during login',
+    });
   }
 });
 
