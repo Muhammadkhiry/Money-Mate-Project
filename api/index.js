@@ -42,8 +42,9 @@ app.post('/register', async (req, res) => {
     user_address,
     user_type,       
     gender,
+    salary,
     com_type,
-    registration_number
+    registration_number,
   } = req.body;
 
   try {
@@ -100,9 +101,10 @@ app.post('/register', async (req, res) => {
       await pool.request()
         .input('customer_id', sql.Int, userId)
         .input('gender', sql.Char(1), gender)
+        .input('salary', sql.Int, salary)
         .query(`
-          INSERT INTO customer (customer_id, gender)
-          VALUES (@customer_id, @gender);
+          INSERT INTO customer (customer_id, gender, salary)
+          VALUES (@customer_id, @gender, @salary);
         `);
     } else if (user_type === 'company') {
       await pool.request()

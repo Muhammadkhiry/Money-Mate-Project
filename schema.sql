@@ -17,6 +17,7 @@ CREATE TABLE User_table(
 create table customer(
 	customer_id int primary key,
 	gender char(1),
+	salary int,
 
 	constraint customer_fk foreign key (customer_id)
 	references User_table(userid)
