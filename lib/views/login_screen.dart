@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
+import 'package:money_mate/views/navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,7 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  Future<void> _login() async {}
+  Future<void> _login() async {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -47,6 +47,15 @@ app.post('/register', async (req, res) => {
   } = req.body;
 
   try {
+
+
+
+
+
+
+
+
+    
     const pool = await sql.connect(config);
 
     // Check if username/email/phone already exist
