@@ -6,6 +6,7 @@ class LoggingTextField extends StatefulWidget {
   final bool isSecured;
   final String? Function(String?)? validator;
   final String? Function(String?)? onChanged;
+  final TextInputType? keyboardType;
   const LoggingTextField({
     super.key,
     required this.hint,
@@ -13,6 +14,7 @@ class LoggingTextField extends StatefulWidget {
     required this.isSecured,
     required this.validator,
     this.onChanged,
+    this.keyboardType,
   });
 
   @override
@@ -25,6 +27,7 @@ class _LoggingTextFieldState extends State<LoggingTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      keyboardType: widget.keyboardType,
       controller: widget.controller,
       validator: widget.validator,
       onChanged: widget.onChanged,
