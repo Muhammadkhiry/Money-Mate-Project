@@ -4,6 +4,7 @@ import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,9 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -64,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(content: Text(json["message"] ?? "Login Failed")),
         );
       }
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -180,7 +181,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text("Don't have account?"),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => RegisterScreen(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "Sign Up",
                           style: TextStyle(color: Color(0xff4CAF50)),
