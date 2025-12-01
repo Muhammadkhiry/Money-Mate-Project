@@ -45,5 +45,7 @@ app.*.map.json
 /android/app/release
 
 # database secret files
-api/.env
+.env
 
+# nmp modules
+api/node_modules/*
