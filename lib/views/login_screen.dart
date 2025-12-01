@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
+import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://SERVER-IP:3000/login");
+    final url = Uri.parse("http://192.168.11.60:3000");
     try {
       final response = await http.post(
         url,
@@ -60,6 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(content: Text(json["message"] ?? "Login Failed")),
         );
       }
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -176,7 +181,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text("Don't have account?"),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => RegisterScreen(),
+                            ),
+                          );
+                        },
                         child: Text(
                           "Sign Up",
                           style: TextStyle(color: Color(0xff4CAF50)),

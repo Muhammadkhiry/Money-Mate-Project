@@ -138,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://SERVER-IP:3000/register");
+    final url = Uri.parse("http://192.168.11.60:3000");
 
     try {
       final response = await http.post(
@@ -165,6 +165,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Account created succefully")));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginScreen()),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["message"] ?? "Registration Failed")),
