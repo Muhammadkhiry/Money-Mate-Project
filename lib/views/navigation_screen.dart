@@ -11,7 +11,6 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  
   int currentIndex = 0;
 
   final List<Widget> screens = [
@@ -24,8 +23,18 @@ class _NavigationScreenState extends State<NavigationScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(backgroundColor: Color(0xff4CAF50)),
-        drawer: Drawer(child: Icon(Icons.abc)),
+        appBar: AppBar(
+          backgroundColor: Color(0xff4CAF50),
+          centerTitle: true,
+          title: Text(
+            "Money Mate",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 32,
+            ),
+          ),
+        ),
         body: screens[currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: currentIndex,

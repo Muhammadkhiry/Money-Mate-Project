@@ -5,20 +5,6 @@ class StatisticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Money Mate - Statistics',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: const Color(0xff42A553),
-      ),
-      body: SingleChildScrollView(),
-    );
+    return Scaffold(body: SingleChildScrollView());
   }
 }

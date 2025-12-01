@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://SERVER-IP:3000/login");
+    final url = Uri.parse("http://192.168.11.60:3000");
     try {
       final response = await http.post(
         url,
