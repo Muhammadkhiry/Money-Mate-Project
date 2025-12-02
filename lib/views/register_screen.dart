@@ -138,7 +138,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://192.168.11.60:3000");
+    // Customer register =>  http://localhost:3000/api/auth/register
+    // Company register =>   http://localhost:3000/api/auth/register
+    final url = Uri.parse("http://localhost:3000/api/auth/register");
 
     try {
       final response = await http.post(
