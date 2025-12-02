@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
       home: Scaffold(
         appBar: AppBar(backgroundColor: Color(0xff4CAF50)),
         drawer: Drawer(child: Icon(Icons.abc)),
-        body: NavigationScreen(),
+        body: LoginScreen(),
       ),
     );
   }
