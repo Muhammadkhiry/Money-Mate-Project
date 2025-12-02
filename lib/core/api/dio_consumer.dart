@@ -4,20 +4,22 @@ import 'package:money_mate/core/api/api_interceptors.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
 
-class DioCosumer extends ApiConsumer {
-  final Dio dio;
+class DioConsumer extends ApiConsumer {
+  final Dio dio = Dio();
 
-  DioCosumer({required this.dio}) {
+  DioConsumer() {
     dio.options.baseUrl = EndPoint.baseURL;
     dio.interceptors.add(ApiInterceptors());
-    dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: true,
-      responseBody: true,
-      error: true,
-    ));
+    dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+      ),
+    );
   }
 
   @override

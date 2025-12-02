@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/views/login_screen.dart';
+import 'package:money_mate/views/navigation_screen.dart';
 
 void main() {
   runApp(const Home());
@@ -20,7 +22,7 @@ class _HomeState extends State<Home> {
       home: Scaffold(
         appBar: AppBar(backgroundColor: Color(0xff4CAF50)),
         drawer: Drawer(child: Icon(Icons.abc)),
-        body: LoginScreen(),
+        body: NavigationScreen(),
       ),
     );
   }
