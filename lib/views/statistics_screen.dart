@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/statistics_categories.dart';
-import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
 import 'package:money_mate/components/statistics_summary.dart';
 
@@ -50,92 +49,89 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: 100,
-              width: double.infinity,
-              color: Color(0xff4CAF50),
-              child: StatisticsDropDownMenue(
-                onSelected: (value) {
-                  setState(() => selectedMonth = value!);
-                  loadData(value!);
-                },
-              ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            alignment: Alignment.center,
+            height: 100,
+            width: double.infinity,
+            color: Color(0xff4CAF50),
+            child: StatisticsDropDownMenue(
+              onSelected: (value) {
+                setState(() => selectedMonth = value!);
+                loadData(value!);
+              },
             ),
+          ),
 
-            const SizedBox(height: 20),
+          const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Monthly Expense Summary",
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Monthly Expense Summary",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 15),
+          const SizedBox(height: 15),
 
-            StatisticsSummary(
-              income: income,
-              expenses: expenses,
-              balance: balance,
-            ),
-            const SizedBox(height: 20),
+          StatisticsSummary(
+            income: income,
+            expenses: expenses,
+            balance: balance,
+          ),
+          const SizedBox(height: 20),
 
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Expenses Trend",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Expenses Trend",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 15),
+          const SizedBox(height: 15),
 
-            StatisticsChart(weekly: weekly),
+          StatisticsChart(weekly: weekly),
+          const SizedBox(height: 20),
 
-            const SizedBox(height: 20),
-
-            Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Where Your Money Went",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Where Your Money Went",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 15),
+          const SizedBox(height: 15),
 
-            StatisticsCategories(categories: categories),
-          ],
-        ),
+          StatisticsCategories(categories: categories),
+        ],
       ),
     );
   }

@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
+import 'package:money_mate/controllers/controllers.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/core/api/end_point.dart';
+import 'package:money_mate/models/user_model.dart';
+import 'package:money_mate/services/api_services.dart';
+import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
+  static String? type;
+  static int? userId;
+
   const LoginScreen({super.key});
 
   @override
@@ -14,9 +23,21 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool isLoading = true;
+  UserModel? model;
+  @override
+  void initState() {
+    ApiServices(api: DioConsumer()).login().then((data) {
+      setState(() {
+        isLoading = false;
+        model = data;
+      });
+    });
+    super.initState();
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+
   bool _isLoading = false;
 
   String? _emailValidator(String? email) {
@@ -40,31 +61,39 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://192.168.11.60:3000");
+    final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.login}");
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "email": _emailController.text,
-          "password": _passwordController.text,
+          "email": Controllers.emailController.text,
+          "password": Controllers.passwordController.text,
         }),
       );
 
       final json = jsonDecode(response.body);
+      LoginScreen.userId = json["user"]["userid"];
+      LoginScreen.type = json["user"]["user_type"];
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Login successful")));
+        if (json["user"]["user_type"] == "customer") {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => ComNavigationScreen()),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["message"] ?? "Login Failed")),
         );
       }
-      Navigator.of(
-        context,
-      ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
     } catch (e) {
       ScaffoldMessenger.of(
         context,
@@ -122,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 10),
                         LoggingTextField(
                           hint: "Email",
-                          controller: _emailController,
+                          controller: Controllers.emailController,
                           isSecured: false,
                           validator: _emailValidator,
                           keyboardType: TextInputType.emailAddress,
@@ -139,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 10),
                         LoggingTextField(
                           hint: "Password",
-                          controller: _passwordController,
+                          controller: Controllers.passwordController,
                           isSecured: true,
                           validator: _passwordValidator,
                         ),

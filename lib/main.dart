@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/views/navigation_screen.dart';
+import 'package:money_mate/views/login_screen.dart';
 
 void main() {
   runApp(const Home());
@@ -31,7 +31,7 @@ class _HomeState extends State<Home> {
           ),
         ),
         drawer: Drawer(child: Icon(Icons.abc)),
-        body: NavigationScreen(),
+        body: LoginScreen(),
       ),
     );
   }

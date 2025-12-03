@@ -1,12 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'dart:convert';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/components/radio_list_group.dart';
+import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/views/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -28,7 +28,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _companyTypeController = TextEditingController();
   final TextEditingController _registrationNumberController =
       TextEditingController();
-  final TextEditingController _salaryController = TextEditingController();
   bool _isLoading = false;
   String _userType = "customer";
   String _gender = "male";
@@ -133,65 +132,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
-  String? _salaryValidator(String? salary) {
-    if (salary == null || salary.isEmpty) {
-      return "Please enter your salary";
-    }
-
-    if (int.tryParse(salary) == null && int.tryParse(salary)! <= 0) {
-      return "Please enter a valid salary";
-    }
-
-    return null;
-  }
-
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://192.168.11.60:3000");
+    // تحويل الـ gender لـ حرف واحد لو userType هو customer
+    String genderValue = "";
+    if (_userType == "customer") {
+      genderValue = _gender == "male" ? "M" : "F";
+    }
+
+    final body = {
+      "username": _usernameController.text,
+      "email": _emailController.text,
+      "password": _passwordController.text,
+      "phone": _phoneNumber,
+      "user_address": _addressController.text,
+      "user_type": _userType,
+      "gender": genderValue,
+      "com_type": _userType == "company" ? _companyTypeController.text : "",
+      "registration_number": _userType == "company"
+          ? _registrationNumberController.text
+          : "",
+    };
+
+    debugPrint("Register body: ${jsonEncode(body)}"); // للتأكد قبل الإرسال
+
+    final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.register}");
 
     try {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "username": _usernameController.text,
-          "email": _emailController.text,
-          "password": _passwordController.text,
-          "phone": _phoneNumber,
-          "user_address": _addressController.text,
-          "user_type": _userType,
-          "gender": _userType == "customer" ? _gender : "",
-          "com_type": _userType == "company" ? _companyTypeController.text : "",
-          "registration_number": _userType == "company"
-              ? _registrationNumberController.text
-              : "",
-        }),
+        body: jsonEncode(body),
       );
 
       final json = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Account created succefully")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account created successfully")),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(json["message"] ?? "Registration Failed")),
+          SnackBar(content: Text(json["error"] ?? "Registration Failed")),
         );
       }
     } catch (e) {
+      debugPrint("Registration error: $e");
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Network Error")));
+      ).showSnackBar(const SnackBar(content: Text("Network Error")));
     }
 
     setState(() => _isLoading = false);
@@ -205,11 +201,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Container(
               color: Color(0xff4CAF50),
+              height: 200,
               width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(height: 20),
                   Icon(Icons.wallet, size: 100, color: Colors.white),
                   Text(
                     "Register",
@@ -364,39 +362,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                   if (_userType == "customer") ...[
-                    Text(
-                      "Gender",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
                     RadioListGroup(
                       titles: ["Male", "Female"],
                       values: ["male", "female"],
                       selected: _gender,
                       onChanged: (value) =>
                           setState(() => _gender = value.toString()),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Salary",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey.shade700,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.start,
-                    ),
-                    SizedBox(height: 10),
-                    LoggingTextField(
-                      hint: "Salary",
-                      controller: _salaryController,
-                      isSecured: false,
-                      validator: _salaryValidator,
-                      keyboardType: TextInputType.number,
                     ),
                   ],
 
