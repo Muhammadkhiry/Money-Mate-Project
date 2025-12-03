@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/statistics_categories.dart';
-import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
 import 'package:money_mate/components/statistics_summary.dart';
 
