@@ -6,7 +6,6 @@ import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/models/user_model.dart';
-import 'package:money_mate/views/login_screen.dart';
 
 class ApiServices {
   final ApiConsumer api;

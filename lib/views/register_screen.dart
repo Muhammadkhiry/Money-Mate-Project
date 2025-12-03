@@ -133,11 +133,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
+
+    // تحويل الـ gender لـ حرف واحد لو userType هو customer
+    String genderValue = "";
+    if (_userType == "customer") {
+      genderValue = _gender == "male" ? "M" : "F";
+    }
+
+    final body = {
+      "username": _usernameController.text,
+      "email": _emailController.text,
+      "password": _passwordController.text,
+      "phone": _phoneNumber,
+      "user_address": _addressController.text,
+      "user_type": _userType,
+      "gender": genderValue,
+      "com_type": _userType == "company" ? _companyTypeController.text : "",
+      "registration_number": _userType == "company"
+          ? _registrationNumberController.text
+          : "",
+    };
+
+    debugPrint("Register body: ${jsonEncode(body)}"); // للتأكد قبل الإرسال
 
     final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.register}");
 
@@ -145,43 +165,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "username": _usernameController.text,
-          "email": _emailController.text,
-          "password": _passwordController.text,
-          "phone": _phoneNumber,
-          "user_address": _addressController.text,
-          "user_type": _userType,
-          "gender": _userType == "customer" ? _gender : "",
-          "com_type": _userType == "company" ? _companyTypeController.text : "",
-          "registration_number": _userType == "company"
-              ? _registrationNumberController.text
-              : "",
-        }),
+        body: jsonEncode(body),
       );
 
       final json = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Account created succefully")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Account created successfully")),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
-        Navigator.of(
-          context,
-        ).pop(MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(json["message"] ?? "Registration Failed")),
+          SnackBar(content: Text(json["error"] ?? "Registration Failed")),
         );
       }
     } catch (e) {
+      debugPrint("Registration error: $e");
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Network Error")));
+      ).showSnackBar(const SnackBar(content: Text("Network Error")));
     }
 
     setState(() => _isLoading = false);
