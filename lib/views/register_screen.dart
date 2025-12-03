@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'dart:convert';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/components/radio_list_group.dart';
@@ -27,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _companyTypeController = TextEditingController();
   final TextEditingController _registrationNumberController =
       TextEditingController();
+  final TextEditingController _salaryController = TextEditingController();
   bool _isLoading = false;
   String _userType = "customer";
   String _gender = "male";
@@ -131,6 +133,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return null;
   }
 
+  String? _salaryValidator(String? salary) {
+    if (salary == null || salary.isEmpty) {
+      return "Please enter your salary";
+    }
+
+    if (int.tryParse(salary) == null && int.tryParse(salary)! <= 0) {
+      return "Please enter a valid salary";
+    }
+
+    return null;
+  }
+
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -191,13 +205,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           children: [
             Container(
               color: Color(0xff4CAF50),
-              height: 200,
               width: double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: 20),
                   Icon(Icons.wallet, size: 100, color: Colors.white),
                   Text(
                     "Register",
@@ -352,12 +364,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                   if (_userType == "customer") ...[
+                    Text(
+                      "Gender",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     RadioListGroup(
                       titles: ["Male", "Female"],
                       values: ["male", "female"],
                       selected: _gender,
                       onChanged: (value) =>
                           setState(() => _gender = value.toString()),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "Salary",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey.shade700,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: 10),
+                    LoggingTextField(
+                      hint: "Salary",
+                      controller: _salaryController,
+                      isSecured: false,
+                      validator: _salaryValidator,
+                      keyboardType: TextInputType.number,
                     ),
                   ],
 

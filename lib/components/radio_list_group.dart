@@ -16,18 +16,16 @@ class RadioListGroup<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: List.generate(titles.length, (index) {
-        return Expanded(
-          child: RadioListTile<T>(
+        return RadioListTile<T>(
             title: Text(titles[index]),
             value: values[index],
             groupValue: selected,
             onChanged: (value) {
               if (value != null) onChanged(value);
             },
-          ),
-        );
+          );
       }),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/views/login_screen.dart';
+import 'package:money_mate/views/navigation_screen.dart';
 
 void main() {
   runApp(const Home());
@@ -18,9 +18,20 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(backgroundColor: Color(0xff4CAF50)),
+        appBar: AppBar(
+          backgroundColor: Color(0xff4CAF50),
+          centerTitle: true,
+          title: Text(
+            "Money Mate",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 32,
+            ),
+          ),
+        ),
         drawer: Drawer(child: Icon(Icons.abc)),
-        body: LoginScreen(),
+        body: NavigationScreen(),
       ),
     );
   }
