@@ -170,6 +170,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context,
           MaterialPageRoute(builder: (context) => LoginScreen()),
         );
+        Navigator.of(
+          context,
+        ).pop(MaterialPageRoute(builder: (context) => LoginScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["message"] ?? "Registration Failed")),

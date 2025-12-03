@@ -6,14 +6,16 @@ import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/services/api_services.dart';
+import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:money_mate/views/register_screen.dart';
 
-String? userId;
-
 class LoginScreen extends StatefulWidget {
+  static String? type;
+  static int? userId;
+
   const LoginScreen({super.key});
 
   @override
@@ -71,14 +73,22 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      userId = json["user"]["userid"].toString();
+      LoginScreen.userId = json["user"]["userid"];
+      LoginScreen.type = json["user"]["user_type"];
+
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Login successful")));
-        Navigator.of(
-          context,
-        ).pop(MaterialPageRoute(builder: (context) => NavigationScreen()));
+        if (json["user"]["user_type"] == "customer") {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+        } else {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => ComNavigationScreen()),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["message"] ?? "Login Failed")),
