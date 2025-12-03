@@ -110,7 +110,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           const SizedBox(height: 15),
 
-          // StatisticsChart(weekly: weekly),
+          StatisticsChart(weekly: weekly),
           const SizedBox(height: 20),
 
           Padding(
