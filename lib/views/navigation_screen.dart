@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/expenses_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
+import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -18,8 +19,15 @@ class _NavigationScreenState extends State<NavigationScreen> {
     const HomeScreen(),
     const ExpensesScreen(),
     const StatisticsScreen(),
-    const BillsScreen(),
+    BillsScreen(userType: LoginScreen.type, userId: LoginScreen.userId,),
   ];
+
+  final List<String> titles = [
+      "Home",
+      "Expenses",
+      "Statistics",
+      "Bills",
+    ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +36,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
         backgroundColor: Color(0xff4CAF50),
         centerTitle: true,
         title: Text(
-          "Money Mate",
+          titles[currentIndex],
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,

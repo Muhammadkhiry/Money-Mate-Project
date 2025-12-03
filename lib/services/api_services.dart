@@ -14,12 +14,10 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
-  billsView() async {
+  billsView(String userType, int userId) async {
     try {
-      
-      final response = await api.get("${EndPoint.customerBills}$userId");
-      billsModel = BillsModel.fromJson({"bills": response});
-      return billsModel;
+      final response = await api.get("bills/$userType/$userId");
+      return BillsModel.fromJson({"bills": response});
     } on ServerException catch (e) {
       log(e.toString());
     }

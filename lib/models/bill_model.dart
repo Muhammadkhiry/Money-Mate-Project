@@ -1,4 +1,3 @@
-
 class BillsModel {
   List<Bill>? bills;
 
@@ -10,12 +9,14 @@ class BillsModel {
         .toList(),
   );
 }
+
 class Bill {
   int? billId;
   double? billAmount;
   String? billStatus;
   DateTime? createdAt;
   String? companyName;
+  String? customerName;
 
   Bill({
     this.billId,
@@ -23,6 +24,7 @@ class Bill {
     this.billStatus,
     this.createdAt,
     this.companyName,
+    this.customerName,
   });
 
   factory Bill.fromJson(Map<String, dynamic> json) => Bill(
@@ -33,5 +35,6 @@ class Bill {
         ? null
         : DateTime.parse(json['created_at'] as String),
     companyName: json['company_name'] as String?,
+    customerName: json['customer_name'] as String?,
   );
 }
