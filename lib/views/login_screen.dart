@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
@@ -80,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ).showSnackBar(SnackBar(content: Text("Login successful")));
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+        ).pop(MaterialPageRoute(builder: (context) => NavigationScreen()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["message"] ?? "Login Failed")),

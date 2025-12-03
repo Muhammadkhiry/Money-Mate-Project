@@ -7,12 +7,9 @@ import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/login_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
   final ApiConsumer api;
-
-
   ApiServices({required this.api});
 
   BillsModel? billsModel;
@@ -40,8 +37,6 @@ class ApiServices {
         },
       );
       userModel = UserModel.fromJson(response);
-
-      return userModel;
     } on ServerException catch (e) {
       log(e.toString());
     }

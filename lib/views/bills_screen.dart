@@ -74,7 +74,6 @@ class _BillsScreenState extends State<BillsScreen> {
                       ),
                     ),
 
-                    // اسم الشركة
                     title: Text(
                       model!.bills![index].companyName ?? "No company",
                       style: TextStyle(
@@ -83,13 +82,11 @@ class _BillsScreenState extends State<BillsScreen> {
                       ),
                     ),
 
-                    // حالة الفاتورة
                     subtitle: Text(
                       model!.bills![index].billStatus ?? "",
                       style: TextStyle(color: Colors.grey[600]),
                     ),
 
-                    // السعر
                     trailing: Text(
                       model!.bills![index].billAmount!.toStringAsFixed(3),
                       style: TextStyle(
