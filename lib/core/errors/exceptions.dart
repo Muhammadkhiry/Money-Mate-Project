@@ -33,7 +33,7 @@ void handleDioExceptions(DioException e) {
         );
       case DioExceptionType.connectionError:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.unknown:
         throw ServerException(
@@ -43,31 +43,31 @@ void handleDioExceptions(DioException e) {
         switch (e.response?.statusCode) {
           case 400:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 401:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 403:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 404:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 409:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 422:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
           case 504:
             throw ServerException(
-              errorModel: ErrorModel.fromJson(e.response!.data),
+              errorModel: ErrorModel.fromJson(e.response?.data),
             );
         }
     }

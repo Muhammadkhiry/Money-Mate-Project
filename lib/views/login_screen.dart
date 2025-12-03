@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (json["user"]["user_type"] == "customer") {
           Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+          ).pushReplacement(MaterialPageRoute(builder: (context) => NavigationScreen()));
         } else {
           Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => ComNavigationScreen()),
