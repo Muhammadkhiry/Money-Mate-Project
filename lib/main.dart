@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/views/login_screen.dart';
-import 'package:money_mate/views/navigation_screen.dart';
 
 void main() {
   runApp(const Home());

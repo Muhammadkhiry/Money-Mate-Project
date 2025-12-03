@@ -37,7 +37,7 @@ void handleDioExceptions(DioException e) {
         );
       case DioExceptionType.unknown:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.badResponse:
         switch (e.response?.statusCode) {

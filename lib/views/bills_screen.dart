@@ -11,18 +11,24 @@ class BillsScreen extends StatefulWidget {
 }
 
 class _BillsScreenState extends State<BillsScreen> {
-  
   BillsModel? model;
   bool isLoading = true;
   @override
+  @override
   void initState() {
-    ApiServices(api: DioConsumer(), id: 5).billsView().then((data) {
-      setState(() {
-        isLoading = false;
-        model = data;
-      });
-    });
     super.initState();
+    _loadBills();
+  }
+
+  void _loadBills() async {
+    setState(() => isLoading = true);
+
+    BillsModel? data = await ApiServices(api: DioConsumer()).billsView();
+
+    setState(() {
+      isLoading = false;
+      model = data;
+    });
   }
 
   @override
@@ -53,7 +59,6 @@ class _BillsScreenState extends State<BillsScreen> {
                       vertical: 4,
                     ),
 
-                    // الرقم أو الـ ID
                     leading: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(

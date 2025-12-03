@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/components/radio_list_group.dart';
+import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/views/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -138,9 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
 
-    // Customer register =>  http://localhost:3000/api/auth/register
-    // Company register =>   http://localhost:3000/api/auth/register
-    final url = Uri.parse("http://localhost:3000/api/auth/register");
+    final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.register}");
 
     try {
       final response = await http.post(
