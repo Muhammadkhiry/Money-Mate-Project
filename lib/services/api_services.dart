@@ -38,4 +38,13 @@ class ApiServices {
       log(e.toString());
     }
   }
+
+  Future<bool> payBill(int billId) async {
+    final response = await api.patch('/bills/$billId/pay');
+
+    if (response['message'] == 'Bill paid successfully') {
+      return true;
+    }
+    return false;
+  }
 }

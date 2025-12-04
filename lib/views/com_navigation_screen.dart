@@ -20,6 +20,7 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(),
       appBar: AppBar(
         backgroundColor: Color(0xff4CAF50),
         centerTitle: true,
