@@ -1,11 +1,13 @@
 const express = require('express');
 const { getPool, sql } = require('../config/database');
+const verifyToken = require('../middleware/authMiddleware');
+
 
 const router = express.Router();
 
 // Search company bills
-router.get('/company/:id/bills', async (req, res) => {
-  const companyId = req.params.id;
+router.get('/company/bills', verifyToken, async (req, res) => {
+  const companyId = req.user.userid; // secure: company ID from token
   const { name, status } = req.query;
 
   try {
@@ -41,8 +43,8 @@ router.get('/company/:id/bills', async (req, res) => {
 });
 
 // Search customer bills
-router.get('/customer/:id/bills', async (req, res) => {
-  const customerId = req.params.id;
+router.get('/customer/bills', verifyToken, async (req, res) => {
+  const customerId = req.user.userid; // secure: customer ID from token
   const { name, status } = req.query;
 
   try {
