@@ -13,8 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  static String? type;
-  static int? userId;
+  static String? type, token;
 
   const LoginScreen({super.key});
 
@@ -73,17 +72,17 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      LoginScreen.userId = json["user"]["userid"];
       LoginScreen.type = json["user"]["user_type"];
+      LoginScreen.token = json["token"];
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Login successful")));
         if (json["user"]["user_type"] == "customer") {
-          Navigator.of(
-            context,
-          ).pushReplacement(MaterialPageRoute(builder: (context) => NavigationScreen()));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => NavigationScreen()),
+          );
         } else {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ComNavigationScreen()),

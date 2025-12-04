@@ -14,9 +14,11 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
-  billsView(String userType, int userId) async {
+  billsView(String userType,String token) async {
     try {
-      final response = await api.get("bills/$userType/$userId");
+      final response = await api.get("bills/$userType/",headers: {
+    "Authorization": token,
+  },);
       return BillsModel.fromJson({"bills": response});
     } on ServerException catch (e) {
       log(e.toString());
@@ -41,8 +43,10 @@ class ApiServices {
     }
   }
 
-  Future<bool> payBill(int billId) async {
-    final response = await api.patch('/bills/$billId/pay');
+  Future<bool> payBill(int billId,String token) async {
+    final response = await api.patch('/bills/$billId/pay',headers: {
+    "Authorization": token,
+  },);
 
     if (response['message'] == 'Bill paid successfully') {
       return true;

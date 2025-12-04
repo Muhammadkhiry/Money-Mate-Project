@@ -19,7 +19,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     const HomeScreen(),
     const ExpensesScreen(),
     const StatisticsScreen(),
-    BillsScreen(userType: LoginScreen.type, userId: LoginScreen.userId,),
+    BillsScreen(userType: LoginScreen.type, token: LoginScreen.token,),
   ];
 
   final List<String> titles = [

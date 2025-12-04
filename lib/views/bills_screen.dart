@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/services/api_services.dart';
+import 'package:money_mate/views/login_screen.dart';
 
 class BillsScreen extends StatefulWidget {
+  final String? token;
   final String? userType;
-  final int? userId;
 
-  const BillsScreen({super.key, required this.userType, required this.userId});
+  const BillsScreen({super.key, required this.userType, required this.token});
 
   @override
   State<BillsScreen> createState() => _BillsScreenState();
@@ -31,7 +32,7 @@ class _BillsScreenState extends State<BillsScreen> {
 
     final data = await ApiServices(
       api: DioConsumer(),
-    ).billsView(widget.userType!, widget.userId!);
+    ).billsView(widget.userType!, widget.token!);
 
     setState(() {
       model = data;
@@ -108,7 +109,7 @@ class _BillsScreenState extends State<BillsScreen> {
   // -------------------------
   Future<void> _changeBillStatus(Bill bill) async {
     // Call API
-    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!);
+    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!,LoginScreen.token!);
 
     if (success) {
       setState(() {
