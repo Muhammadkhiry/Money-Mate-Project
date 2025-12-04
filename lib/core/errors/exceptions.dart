@@ -13,23 +13,23 @@ void handleDioExceptions(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.sendTimeout:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.receiveTimeout:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.badCertificate:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.cancel:
         throw ServerException(
-          errorModel: ErrorModel.fromJson(e.response!.data),
+          errorModel: ErrorModel.fromJson(e.response?.data),
         );
       case DioExceptionType.connectionError:
         throw ServerException(

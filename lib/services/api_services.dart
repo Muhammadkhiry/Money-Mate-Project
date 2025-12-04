@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
@@ -34,6 +35,7 @@ class ApiServices {
         },
       );
       userModel = UserModel.fromJson(response);
+      final decoderToken = JwtDecoder.decode(userModel!.token);
     } on ServerException catch (e) {
       log(e.toString());
     }
