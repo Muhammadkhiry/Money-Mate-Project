@@ -32,6 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
         model = data;
       });
     });
+    Controllers.emailController.clear();
+    Controllers.passwordController.clear();
     super.initState();
   }
 

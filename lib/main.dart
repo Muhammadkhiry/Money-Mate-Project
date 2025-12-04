@@ -30,7 +30,6 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
-        drawer: Drawer(child: Icon(Icons.abc)),
         body: LoginScreen(),
       ),
     );

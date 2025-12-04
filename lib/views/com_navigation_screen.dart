@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/components/logging_button.dart';
+import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
@@ -17,10 +19,30 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
     BillsScreen(userType: LoginScreen.type, token: LoginScreen.token),
   ];
   final List<String> titles = ["Statistics", "Bills"];
+  Future<void> _logout() async {
+    Controllers.emailController.clear();
+    Controllers.passwordController.clear();
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
+      drawer: Drawer(
+        child: Center(
+          child: LoggingButton(
+            width: 70,
+            height: 35,
+            onPressed: _logout,
+            child: Text(
+              "Logout",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
+          ),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Color(0xff4CAF50),
         centerTitle: true,
