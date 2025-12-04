@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
           ).pushReplacement(MaterialPageRoute(builder: (context) => NavigationScreen()));
         } else {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ComNavigationScreen()),
           );
         }
