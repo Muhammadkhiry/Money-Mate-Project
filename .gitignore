@@ -49,3 +49,5 @@ app.*.map.json
 
 # nmp modules
 api/node_modules/*
+.vscode/settings.json
+api/.env
