@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/controllers/controllers.dart';
-import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/models/user_model.dart';
-import 'package:money_mate/services/api_services.dart';
 import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
@@ -23,15 +21,8 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = true;
-  UserModel? model;
   @override
   void initState() {
-    ApiServices(api: DioConsumer()).login().then((data) {
-      setState(() {
-        isLoading = false;
-        model = data;
-      });
-    });
     Controllers.emailController.clear();
     Controllers.passwordController.clear();
     super.initState();
@@ -74,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      LoginScreen.userModel = jsonDecode(response.body);
+      LoginScreen.userModel = UserModel.fromJson(jsonDecode(response.body));
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,

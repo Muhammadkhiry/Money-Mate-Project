@@ -15,7 +15,7 @@ class UserModel {
       userName: jsonData["user"]["username"],
       email: jsonData["user"]["email"],
       userType: jsonData["user"]["user_type"],
-      token: jsonData["user"]["user_type"],
+      token: jsonData["token"],
     );
   }
 }
