@@ -77,7 +77,7 @@ router.post('/register', async (req, res) => {
       }
 
       await transaction.commit();
-      res.status(201).json({ message: 'Registered successfully'});
+      res.status(201).json({ message: 'Registered successfully' });
 
     } catch (txErr) {
       await transaction.rollback();
