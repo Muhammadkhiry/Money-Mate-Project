@@ -14,10 +14,12 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
+
+
   billsView(String userType, String token) async {
     try {
       final response = await api.get(
-        "bills",
+        "bills/$userType/",
         headers: {"Authorization": token},
       );
       return BillsModel.fromJson({"bills": response});

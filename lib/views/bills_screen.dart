@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/services/api_services.dart';
 
 class BillsScreen extends StatefulWidget {
-  final String? userType,token;
+  final String? userType, token;
 
   const BillsScreen({super.key, required this.userType, required this.token});
 

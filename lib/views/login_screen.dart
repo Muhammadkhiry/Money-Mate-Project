@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      LoginScreen.userModel = jsonDecode(response.body);
+      LoginScreen.userModel = UserModel.fromJson(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
