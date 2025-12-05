@@ -77,7 +77,7 @@ router.post('/register', async (req, res) => {
       }
 
       await transaction.commit();
-      res.status(201).json({ message: 'Registered successfully'});
+      res.status(201).json({ message: 'Registered successfully' });
 
     } catch (txErr) {
       await transaction.rollback();
@@ -121,7 +121,13 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      token
+      token,
+      user: {
+        userid: user.userid,
+        username: user.username,
+        email,
+        user_type: user.user_type
+      }
     });
   } catch (err) {
     console.error(err);
