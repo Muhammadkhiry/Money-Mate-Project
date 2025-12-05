@@ -21,7 +21,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
     const HomeScreen(),
     const ExpensesScreen(),
     const StatisticsScreen(),
-    BillsScreen(userType: LoginScreen.type, token: LoginScreen.token),
+    BillsScreen(userType: LoginScreen.userModel!.userType, token: LoginScreen.userModel!.token),
   ];
 
   final List<String> titles = ["Home", "Expenses", "Statistics", "Bills"];

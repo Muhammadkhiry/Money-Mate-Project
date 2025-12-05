@@ -109,7 +109,7 @@ class _BillsScreenState extends State<BillsScreen> {
   // -------------------------
   Future<void> _changeBillStatus(Bill bill) async {
     // Call API
-    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!,LoginScreen.token!);
+    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!,LoginScreen.userModel!.token);
 
     if (success) {
       setState(() {

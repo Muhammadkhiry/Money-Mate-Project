@@ -16,7 +16,10 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
   int currentIndex = 0;
   final List<Widget> screens = [
     const StatisticsScreen(),
-    BillsScreen(userType: LoginScreen.type, token: LoginScreen.token),
+    BillsScreen(
+      userType: LoginScreen.userModel!.userType,
+      token: LoginScreen.userModel!.token,
+    ),
   ];
   final List<String> titles = ["Statistics", "Bills"];
   Future<void> _logout() async {
