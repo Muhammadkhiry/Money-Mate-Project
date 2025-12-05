@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/bill_model.dart';
+import 'package:money_mate/models/bill_response.dart';
 import 'package:money_mate/models/user_model.dart';
 
 class ApiServices {
@@ -14,9 +14,12 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
-  billsView(String userType, int userId) async {
+  billsView(String userType, String token) async {
     try {
-      final response = await api.get("bills/$userType/$userId");
+      final response = await api.get(
+        "bills",
+        headers: {"Authorization": token},
+      );
       return BillsModel.fromJson({"bills": response});
     } on ServerException catch (e) {
       log(e.toString());
@@ -35,7 +38,6 @@ class ApiServices {
         },
       );
       userModel = UserModel.fromJson(response);
-      final decoderToken = JwtDecoder.decode(userModel!.token);
     } on ServerException catch (e) {
       log(e.toString());
     }
@@ -48,5 +50,24 @@ class ApiServices {
       return true;
     }
     return false;
+  }
+
+  Future<BillResponse?> createBill({
+    required String customerEmail,
+    required String billAmount,
+    required String token,
+  }) async {
+    try {
+      final response = await api.post(
+        "bills/add",
+        headers: {"Authorization": token},
+        data: {"customer_email": customerEmail, "bill_amount": billAmount},
+      );
+
+      return BillResponse.fromJson(response.data);
+    } catch (e) {
+      print("Error creating bill: $e");
+      return null;
+    }
   }
 }

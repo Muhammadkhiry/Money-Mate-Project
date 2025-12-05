@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/views/add_new_expense.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,17 +11,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => AddNewExpense()));
-        },
-        backgroundColor: const Color(0xff4CAF50),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-
       backgroundColor: const Color(0xff4CAF50),
 
       body: SafeArea(
