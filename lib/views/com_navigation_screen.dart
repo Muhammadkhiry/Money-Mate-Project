@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/controllers/controllers.dart';
+import 'package:money_mate/views/add_bill_screen.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
@@ -19,9 +20,9 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
     BillsScreen(
       userType: LoginScreen.userModel!.userType,
       token: LoginScreen.userModel!.token,
-    ),
+    ),AddBillScreen()
   ];
-  final List<String> titles = ["Statistics", "Bills"];
+  final List<String> titles = ["Statistics", "Bills","AddBills"];
   Future<void> _logout() async {
     Controllers.emailController.clear();
     Controllers.passwordController.clear();
@@ -78,6 +79,10 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.align_horizontal_left_rounded),
             label: 'Bills',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_card_rounded),
+            label: 'AddBills',
           ),
         ],
       ),

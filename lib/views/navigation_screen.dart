@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/views/bills_screen.dart';
-import 'package:money_mate/views/expenses_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
@@ -19,12 +18,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   final List<Widget> screens = [
     const HomeScreen(),
-    const ExpensesScreen(),
     const StatisticsScreen(),
     BillsScreen(userType: LoginScreen.userModel!.userType, token: LoginScreen.userModel!.token),
   ];
 
-  final List<String> titles = ["Home", "Expenses", "Statistics", "Bills"];
+  final List<String> titles = ["Home", "Statistics", "Bills"];
   Future<void> _logout() async {
     Controllers.emailController.clear();
     Controllers.passwordController.clear();
@@ -75,10 +73,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_headline_rounded),
-            label: 'Expenses',
-          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Statistics',

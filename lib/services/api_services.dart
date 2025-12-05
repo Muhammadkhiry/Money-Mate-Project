@@ -4,6 +4,7 @@ import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
+import 'package:money_mate/models/add_bill_model.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/models/user_model.dart';
 
@@ -13,11 +14,12 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
-  billsView(String userType,String token) async {
+  billsView(String userType, String token) async {
     try {
-      final response = await api.get("bills/$userType/",headers: {
-    "Authorization": token,
-  },);
+      final response = await api.get(
+        "bills/$userType/",
+        headers: {"Authorization": token},
+      );
       return BillsModel.fromJson({"bills": response});
     } on ServerException catch (e) {
       log(e.toString());
@@ -41,14 +43,34 @@ class ApiServices {
     }
   }
 
-  Future<bool> payBill(int billId,String token) async {
-    final response = await api.patch('/bills/$billId/pay',headers: {
-    "Authorization": token,
-  },);
+  Future<bool> payBill(int billId, String token) async {
+    final response = await api.patch(
+      '/bills/$billId/pay',
+      headers: {"Authorization": token},
+    );
 
     if (response['message'] == 'Bill paid successfully') {
       return true;
     }
     return false;
+  }
+
+  Future<BillResponse?> createBill({
+    required String customerEmail,
+    required String billAmount,
+    required String token,
+  }) async {
+    try {
+      final response = await api.post(
+        "bills/add",
+        data: {"customer_email": customerEmail, "bill_amount": billAmount},
+        headers: {"Authorization": token},
+      );
+
+      return BillResponse.fromJson(response.data);
+    } catch (e) {
+      print("Error creating bill: $e");
+      return null;
+    }
   }
 }
