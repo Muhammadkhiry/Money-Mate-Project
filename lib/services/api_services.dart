@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
@@ -16,17 +17,25 @@ class ApiServices {
   UserModel? userModel;
 
 
-  billsView(String userType, String token) async {
-    try {
-      final response = await api.get(
-        "bills/$userType/",
-        headers: {"Authorization": token},
-      );
-      return BillsModel.fromJson({"bills": response});
-    } on ServerException catch (e) {
-      log(e.toString());
-    }
+  Future<BillsModel?> billsView(String userType, String token) async {
+  try {
+    final response = await api.get(
+      "/bills/$userType/",
+      headers: {"Authorization": token},
+    );
+
+    // response هنا List<dynamic>
+    final List<dynamic> billsList = response;
+
+    return BillsModel(
+      bills: billsList.map((e) => Bill.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  } on DioException catch (e) {
+    log(e.toString());
+    return null;
   }
+}
+
 
   recentExpenses() async {}
 
@@ -45,8 +54,9 @@ class ApiServices {
     }
   }
 
-  Future<bool> payBill(int billId) async {
-    final response = await api.patch('/bills/$billId/pay');
+  Future<bool> payBill(int billId,String token) async {
+    final response = await api.patch('/bills/$billId/pay',
+      headers: {"Authorization": token});
 
     if (response['message'] == 'Bill paid successfully') {
       return true;

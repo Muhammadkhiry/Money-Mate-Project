@@ -1,9 +1,9 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/services/api_services.dart';
+import 'package:money_mate/views/login_screen.dart';
 
 class BillsScreen extends StatefulWidget {
   final String? userType, token;
@@ -36,7 +36,7 @@ class _BillsScreenState extends State<BillsScreen> {
 
     setState(() {
       model = data;
-      displayedBills = data.bills ?? [];
+      displayedBills = data!.bills ?? [];
       isLoading = false;
     });
   }
@@ -109,7 +109,7 @@ class _BillsScreenState extends State<BillsScreen> {
   // -------------------------
   Future<void> _changeBillStatus(Bill bill) async {
     // Call API
-    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!);
+    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!,LoginScreen.userModel!.token);
 
     if (success) {
       setState(() {
