@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/models/bill_model.dart';
@@ -109,7 +108,9 @@ class _BillsScreenState extends State<BillsScreen> {
   // -------------------------
   Future<void> _changeBillStatus(Bill bill) async {
     // Call API
-    final success = await ApiServices(api: DioConsumer()).payBill(bill.billId!,LoginScreen.userModel!.token);
+    final success = await ApiServices(
+      api: DioConsumer(),
+    ).payBill(bill.billId!, LoginScreen.userModel!.token);
 
     if (success) {
       setState(() {
@@ -177,11 +178,9 @@ class _BillsScreenState extends State<BillsScreen> {
                         ),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.blue.withOpacity(0.1),
-                            child: Text(
-                              bill.billId.toString(),
-                              style: TextStyle(color: Colors.blue),
-                            ),
+                            backgroundColor: bill.billStatus == 'paid'
+                                ? Colors.green
+                                : Colors.red.shade900,
                           ),
                           title: Text(
                             widget.userType == "customer"
