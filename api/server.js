@@ -7,6 +7,7 @@ const { connect } = require('./src/config/database');
 const authRoutes = require('./src/routes/auth');
 const billRoutes = require('./src/routes/bills');
 const searchRoutes = require('./src/routes/search');
+const statsRoutes = require('./src/routes/stats');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,9 +25,10 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/bills', billRoutes);
 app.use('/api/search', searchRoutes);
+app.use('/api/stats', statsRoutes);
 
 // 404
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
