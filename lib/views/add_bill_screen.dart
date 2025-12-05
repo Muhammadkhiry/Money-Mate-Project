@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/services/api_services.dart';
@@ -35,7 +33,6 @@ class _AddBillScreenState extends State<AddBillScreen> {
         SnackBar(content: Text("Done! Bill ID = ${result.billId}")),
       );
     } else {
-      log(result.toString());
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Failed to create bill")));
