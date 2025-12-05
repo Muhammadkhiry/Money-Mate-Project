@@ -16,26 +16,26 @@ class ApiServices {
   BillsModel? billsModel;
   UserModel? userModel;
 
-
   Future<BillsModel?> billsView(String userType, String token) async {
-  try {
-    final response = await api.get(
-      "/bills/$userType/",
-      headers: {"Authorization": token},
-    );
+    try {
+      final response = await api.get(
+        "/bills/$userType/",
+        headers: {"Authorization": token},
+      );
 
-    // response هنا List<dynamic>
-    final List<dynamic> billsList = response;
+      // response هنا List<dynamic>
+      final List<dynamic> billsList = response;
 
-    return BillsModel(
-      bills: billsList.map((e) => Bill.fromJson(e as Map<String, dynamic>)).toList(),
-    );
-  } on DioException catch (e) {
-    log(e.toString());
-    return null;
+      return BillsModel(
+        bills: billsList
+            .map((e) => Bill.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+    } on DioException catch (e) {
+      log(e.toString());
+      return null;
+    }
   }
-}
-
 
   recentExpenses() async {}
 
@@ -54,9 +54,11 @@ class ApiServices {
     }
   }
 
-  Future<bool> payBill(int billId,String token) async {
-    final response = await api.patch('/bills/$billId/pay',
-      headers: {"Authorization": token});
+  Future<bool> payBill(int billId, String token) async {
+    final response = await api.patch(
+      '/bills/$billId/pay',
+      headers: {"Authorization": token},
+    );
 
     if (response['message'] == 'Bill paid successfully') {
       return true;
@@ -66,7 +68,7 @@ class ApiServices {
 
   Future<BillResponse?> createBill({
     required String customerEmail,
-    required String billAmount,
+    required int billAmount,
     required String token,
   }) async {
     try {
@@ -76,7 +78,7 @@ class ApiServices {
         data: {"customer_email": customerEmail, "bill_amount": billAmount},
       );
 
-      return BillResponse.fromJson(response.data);
+      return BillResponse.fromJson(response);
     } catch (e) {
       print("Error creating bill: $e");
       return null;

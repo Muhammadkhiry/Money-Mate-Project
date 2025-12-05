@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/controllers/controllers.dart';
+import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
@@ -17,19 +19,52 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final List<Widget> screens = [
     const HomeScreen(),
     const StatisticsScreen(),
-    BillsScreen(userType: LoginScreen.userModel!.userType, token: LoginScreen.userModel!.token,),
+    BillsScreen(
+      userType: LoginScreen.userModel!.userType,
+      token: LoginScreen.userModel!.token,
+    ),
   ];
 
-  final List<String> titles = [
-      "Home",
-      "Statistics",
-      "Bills",
-    ];
+  final List<String> titles = ["Home", "Statistics", "Bills"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: Color(0xff4CAF50)),
+              accountName: Text(LoginScreen.userModel!.userName),
+              accountEmail: Text(LoginScreen.userModel!.email),
+              currentAccountPicture: CircleAvatar(
+                child: Text(
+                  LoginScreen.userModel!.userName[0].toUpperCase(),
+                  style: TextStyle(fontSize: 40.0),
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.business),
+              title: Text('User Type: ${LoginScreen.userModel!.userType}'),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: () {
+                UserModel.clear();
+                Controllers.emailController.clear();
+                Controllers.passwordController.clear();
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Color(0xff4CAF50),
         centerTitle: true,

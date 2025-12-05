@@ -18,4 +18,10 @@ class UserModel {
       token: jsonData["token"],
     );
   }
+
+  static UserModel? currentUser;
+
+  static void clear() {
+    currentUser = null;
+  }
 }

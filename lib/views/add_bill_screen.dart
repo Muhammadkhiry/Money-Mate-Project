@@ -18,25 +18,35 @@ class _AddBillScreenState extends State<AddBillScreen> {
   bool loading = false;
 
   Future<void> submit() async {
-    setState(() => loading = true);
-
-    final result = await billService.createBill(
-      customerEmail: emailController.text.trim(),
-      billAmount: amountController.text.trim(), token: LoginScreen.userModel!.token,
+  final amount = double.tryParse(amountController.text);
+  if (amount == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Invalid amount")),
     );
-
-    setState(() => loading = false);
-
-    if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Done! Bill ID = ${result.billId}")),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to create bill")),
-      );
-    }
+    return;
   }
+
+  setState(() => loading = true);
+
+  final result = await billService.createBill(
+    customerEmail: emailController.text,
+    billAmount: int.parse(amountController.text),
+    token: LoginScreen.userModel!.token,
+  );
+
+  setState(() => loading = false);
+
+  if (result?.message != null && result?.billId != null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Done! Bill ID = ${result?.billId}")),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Failed to create bill")),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

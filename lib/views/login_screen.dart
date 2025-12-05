@@ -28,6 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
+  
 
   String? _emailValidator(String? email) {
     if (email == null || email.isEmpty) return "Please enter your email";
