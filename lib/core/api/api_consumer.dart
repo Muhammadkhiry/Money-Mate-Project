@@ -26,4 +26,6 @@ abstract class ApiConsumer {
     Map<String, dynamic>? queryParms,
     Map<String, dynamic>? headers,
   });
+
+  Future getBills({required String token}) async {}
 }
