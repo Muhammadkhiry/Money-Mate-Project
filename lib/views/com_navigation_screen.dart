@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/controllers/controllers.dart';
-import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/add_bill_screen.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
