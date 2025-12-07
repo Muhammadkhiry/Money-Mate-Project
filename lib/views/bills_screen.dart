@@ -220,27 +220,52 @@ class _BillsScreenState extends State<BillsScreen> {
               ],
             ),
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: bill.billStatus == 'paid'
-                    ? Colors.green
-                    : Colors.red.shade900,
+              leading: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: bill.billStatus == "paid"
+                      ? Colors.green.withOpacity(0.2)
+                      : Colors.red.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  bill.billStatus ?? "",
+                  style: TextStyle(
+                    color: bill.billStatus == "paid"
+                        ? Colors.green
+                        : Colors.red,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
               title: Text(
-                widget.userType == "customer"
-                    ? bill.companyName ?? "No company"
-                    : bill.customerName ?? "No customer",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                LoginScreen.userModel!.userType == "customer"
+                    ? bill.companyName!
+                    : bill.customerName!,
               ),
-              subtitle: Text(
-                bill.billStatus ?? "",
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              trailing: Text(
-                bill.billAmount!.toStringAsFixed(2),
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
+              subtitle: Text("${bill.billAmount} EGP"),
+              trailing: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: bill.billStatus == "paid"
+                      ? Colors.green.withOpacity(0.2)
+                      : Colors.red.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  bill.createdAt!.substring(0, 10),
+                  // bill.billStatus ?? "",
+                  // style: TextStyle(
+                  //   color: bill.billStatus == "paid"
+                  //       ? Colors.green
+                  //       : Colors.red,
+                  //   fontWeight: FontWeight.bold,
                 ),
               ),
             ),

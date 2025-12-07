@@ -14,7 +14,7 @@ class Bill {
   int? billId;
   double? billAmount;
   String? billStatus;
-  DateTime? createdAt;
+  String? createdAt;
   String? companyName;
   String? customerName;
 
@@ -31,9 +31,7 @@ class Bill {
     billId: json['bill_id'] as int?,
     billAmount: (json['bill_amount'] as num?)?.toDouble(),
     billStatus: json['bill_status'] as String?,
-    createdAt: json['created_at'] == null
-        ? null
-        : DateTime.parse(json['created_at'] as String),
+    createdAt: json['created_at'],
     companyName: json['company_name'] as String?,
     customerName: json['customer_name'] as String?,
   );
