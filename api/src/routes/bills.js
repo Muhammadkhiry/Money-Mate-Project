@@ -1,17 +1,35 @@
 const express = require('express');
 const { getPool, sql } = require('../config/database');
+const verifyToken = require('../middleware/authMiddleware');
+
 
 const router = express.Router();
 
 // Company adds bill
-router.post('/add', async (req, res) => {
-  const { company_id, customer_id, bill_amount } = req.body;
-  if (!company_id || !customer_id || !bill_amount) {
+router.post('/add', verifyToken, async (req, res) => {
+  const { customer_email, bill_amount } = req.body;
+  const company_id = req.user.userid; // secure: company ID from token
+  if (!company_id || !customer_email || !bill_amount) {
     return res.status(400).json({ error: 'Missing fields' });
   }
 
   try {
     const pool = await getPool();
+
+    // Find the customer ID by email
+    const userResult = await pool.request()
+      .input('email', sql.VarChar(40), customer_email)
+      .query(`
+        SELECT userid FROM User_table
+        WHERE email = @email
+      `);
+
+    if (userResult.recordset.length === 0) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }  
+    const customer_id = userResult.recordset[0].userid;
+    
+    // add bill
     const result = await pool.request()
       .input('company_id', sql.Int, company_id)
       .input('customer_id', sql.Int, customer_id)
@@ -33,7 +51,7 @@ router.post('/add', async (req, res) => {
 });
 
 // Customer pays bill
-router.patch('/:billId/pay', async (req, res) => {
+router.patch('/:billId/pay', verifyToken, async (req, res) => {
   const { billId } = req.params;
 
   try {
@@ -57,8 +75,8 @@ router.patch('/:billId/pay', async (req, res) => {
 });
 
 // Company: View all bills
-router.get('/company/:id', async (req, res) => {
-  const { id } = req.params;
+router.get('/company', verifyToken, async (req, res) => {
+  const id = req.user.userid; // secure: company ID from token
   const { status } = req.query;
 
   try {
@@ -89,8 +107,8 @@ router.get('/company/:id', async (req, res) => {
 });
 
 // Customer: View all bills
-router.get('/customer/:id', async (req, res) => {
-  const { id } = req.params;
+router.get('/customer', verifyToken, async (req, res) => {
+  const id = req.user.userid; // secure: customer ID from token
   const { status } = req.query;
 
   try {

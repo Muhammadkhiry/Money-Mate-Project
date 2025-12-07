@@ -1,11 +1,12 @@
 class UserModel {
-  final String userId, userName, email, userType;
+  final String userId, userName, email, userType, token;
 
   UserModel({
     required this.userId,
     required this.userName,
     required this.email,
     required this.userType,
+    required this.token,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> jsonData) {
@@ -14,6 +15,13 @@ class UserModel {
       userName: jsonData["user"]["username"],
       email: jsonData["user"]["email"],
       userType: jsonData["user"]["user_type"],
+      token: jsonData["token"],
     );
+  }
+
+  static UserModel? currentUser;
+
+  static void clear() {
+    currentUser = null;
   }
 }

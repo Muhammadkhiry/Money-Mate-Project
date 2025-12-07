@@ -1,169 +1,252 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/views/add_new_expense.dart';
+import 'package:money_mate/controllers/controllers.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/models/bill_model.dart';
+import 'package:money_mate/models/user_model.dart';
+import 'package:money_mate/services/api_services.dart';
+import 'package:money_mate/views/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final UserModel? user;
+
+  const HomeScreen({super.key, required this.user});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<Bill>> _billsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _billsFuture = ApiServices(api: DioConsumer())
+        .billsView(widget.user!.userType, widget.user!.token)
+        .then((model) => model?.bills ?? []);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => AddNewExpense()));
-        },
-        backgroundColor: const Color(0xff4CAF50),
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
-
-      backgroundColor: const Color(0xff4CAF50),
-
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(13.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF5F5F5),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Top card
-                        Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Total Spent Today",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xff52595C),
-                                    fontSize: 18,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "120 EGP",
-                                  style: TextStyle(
-                                    fontSize: 36,
-                                    color: Colors.green,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Divider(
-                                  indent: 30,
-                                  endIndent: 30,
-                                  color: Colors.grey,
-                                ),
-                                Text(
-                                  "This Month: 1500 EGP",
-                                  style: TextStyle(
-                                    color: Color(0xff52595C),
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 25),
-
-                        const Text(
-                          "Recent Expenses",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff52595C),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        // List of recent expenses
-                        Column(
-                          children: const [
-                            ExpenseTile(
-                              icon: Icons.fastfood_rounded,
-                              title: "Subway Sandwich",
-                              date: "28 Oct 2025",
-                              price: "50 EGP",
-                            ),
-                            ExpenseTile(
-                              icon: Icons.local_taxi,
-                              title: "Uber Ride",
-                              date: "27 Oct 2025",
-                              price: "35 EGP",
-                            ),
-                          ],
-                        ),
-                      ],
+              // 👋 Hello
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Hello, ${widget.user!.userName} 👋",
+                      style: const TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Controllers.emailController.clear();
+                        Controllers.passwordController.clear();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text("Log out", style: TextStyle(fontSize: 16)),
+                          Icon(Icons.logout),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
+              const SizedBox(height: 15),
+
+              // 🧑‍💼 User Info
+              _userInfoCard(),
+
+              const SizedBox(height: 25),
+
+              // 🧾 Stats + Recent Bills
+              FutureBuilder<List<Bill>>(
+                future: _billsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Text("No bills found");
+                  }
+
+                  final bills = snapshot.data!.take(4).toList();
+                  final allBills = snapshot.data!.toList();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Stats Section
+                      _buildStatsSection(allBills),
+                      const SizedBox(height: 25),
+
+                      // Recent Bills Title
+                      const Text(
+                        "Recent Bills",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+
+                      // Recent Bills List
+                      Column(
+                        children: bills.map((bill) => _billTile(bill)).toList(),
+                      ),
+                    ],
+                  );
+                },
+              ),
+
+              const SizedBox(height: 40),
+
+              // 🚪 Logout Button
             ],
           ),
         ),
       ),
     );
   }
-}
 
-class ExpenseTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String date;
-  final String price;
+  // ================= Helper Widgets =================
 
-  const ExpenseTile({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.date,
-    required this.price,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _userInfoCard() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: Colors.white,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "User Information",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.green.shade800,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            "Email: ${widget.user!.email}",
+            style: const TextStyle(fontSize: 16),
+          ),
+          Text(
+            "User Type: ${widget.user!.userType}",
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _billTile(Bill bill) {
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
-        leading: Icon(icon, color: Color(0xff4CAF50)),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(
-          date,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
+        title: Text(
+          LoginScreen.userModel!.userType == "customer"
+              ? bill.companyName!
+              : bill.customerName!,
         ),
-        trailing: Text(
-          price,
-          style: const TextStyle(
-            color: Colors.red,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+        subtitle: Text("${bill.billAmount} EGP"),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: bill.billStatus == "paid"
+                ? Colors.green.withOpacity(0.2)
+                : Colors.red.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            bill.billStatus ?? "",
+            style: TextStyle(
+              color: bill.billStatus == "paid" ? Colors.green : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatsSection(List<Bill> bills) {
+    double total = 0, paid = 0, unpaid = 0;
+
+    for (var bill in bills) {
+      total += bill.billAmount ?? 0;
+      if (bill.billStatus == "paid") {
+        paid += bill.billAmount ?? 0;
+      } else {
+        unpaid += bill.billAmount ?? 0;
+      }
+    }
+
+    String format(double value) => value.toStringAsFixed(2) + " EGP";
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _statCard("Total", format(total)),
+        _statCard("Paid", format(paid)),
+        _statCard("Unpaid", format(unpaid)),
+      ],
+    );
+  }
+
+  Widget _statCard(String title, String value) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      width: 110,
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Column(
+        children: [
+          Text(title, style: const TextStyle(fontSize: 16)),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+            ),
+          ),
+        ],
       ),
     );
   }

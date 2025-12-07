@@ -1,6 +1,12 @@
+require('dotenv').config();
+
 const express = require('express');
 const bcrypt = require('bcrypt');
 const { getPool, sql } = require('../config/database');
+
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION;
 
 const router = express.Router();
 
@@ -71,7 +77,7 @@ router.post('/register', async (req, res) => {
       }
 
       await transaction.commit();
-      res.status(201).json({ message: 'Registered successfully', userId });
+      res.status(201).json({ message: 'Registered successfully' });
 
     } catch (txErr) {
       await transaction.rollback();
@@ -106,8 +112,16 @@ router.post('/login', async (req, res) => {
 
     if (!match) return res.status(401).json({ error: 'Invalid password' });
 
+    // Generate JWT token
+    const token = jwt.sign(
+      { userid: user.userid, username: user.username, email, user_type: user.user_type },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRATION }
+    );
+
     res.json({
       message: 'Login successful',
+      token,
       user: {
         userid: user.userid,
         username: user.username,

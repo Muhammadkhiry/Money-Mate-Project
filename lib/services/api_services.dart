@@ -1,10 +1,12 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
 import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/bill_model.dart';
+import 'package:money_mate/models/bill_response.dart';
 import 'package:money_mate/models/user_model.dart';
 
 class ApiServices {
@@ -13,12 +15,25 @@ class ApiServices {
 
   BillsModel? billsModel;
   UserModel? userModel;
-  billsView(String userType, int userId) async {
+
+  Future<BillsModel?> billsView(String userType, String token) async {
     try {
-      final response = await api.get("bills/$userType/$userId");
-      return BillsModel.fromJson({"bills": response});
-    } on ServerException catch (e) {
+      final response = await api.get(
+        "/bills/$userType/",
+        headers: {"Authorization": token},
+      );
+
+      // response هنا List<dynamic>
+      final List<dynamic> billsList = response;
+
+      return BillsModel(
+        bills: billsList
+            .map((e) => Bill.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+    } on DioException catch (e) {
       log(e.toString());
+      return null;
     }
   }
 
@@ -36,6 +51,37 @@ class ApiServices {
       userModel = UserModel.fromJson(response);
     } on ServerException catch (e) {
       log(e.toString());
+    }
+  }
+
+  Future<bool> payBill(int billId, String token) async {
+    final response = await api.patch(
+      '/bills/$billId/pay',
+      headers: {"Authorization": token},
+    );
+
+    if (response['message'] == 'Bill paid successfully') {
+      return true;
+    }
+    return false;
+  }
+
+  Future<BillResponse?> createBill({
+    required String customerEmail,
+    required int billAmount,
+    required String token,
+  }) async {
+    try {
+      final response = await api.post(
+        "bills/add",
+        headers: {"Authorization": token},
+        data: {"customer_email": customerEmail, "bill_amount": billAmount},
+      );
+
+      return BillResponse.fromJson(response);
+    } catch (e) {
+      print("Error creating bill: $e");
+      return null;
     }
   }
 }

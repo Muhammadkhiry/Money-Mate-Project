@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/views/add_bill_screen.dart';
 import 'package:money_mate/views/bills_screen.dart';
+import 'package:money_mate/views/home_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
 
@@ -13,10 +15,15 @@ class ComNavigationScreen extends StatefulWidget {
 class _ComNavigationScreenState extends State<ComNavigationScreen> {
   int currentIndex = 0;
   final List<Widget> screens = [
+    HomeScreen(user: LoginScreen.userModel),
     const StatisticsScreen(),
-    BillsScreen(userType: LoginScreen.type, userId: LoginScreen.userId),
+    BillsScreen(
+      userType: LoginScreen.userModel!.userType,
+      token: LoginScreen.userModel!.token,
+    ),
+    AddBillScreen(),
   ];
-  final List<String> titles = ["Statistics", "Bills"];
+  final List<String> titles = ["Home", "Statistics", "Bills", "AddBills"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,6 +52,7 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
           });
         },
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Statistics',
@@ -52,6 +60,10 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.align_horizontal_left_rounded),
             label: 'Bills',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_card_outlined),
+            label: 'AddBills',
           ),
         ],
       ),

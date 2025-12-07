@@ -1,11 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/controllers/controllers.dart';
-import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/models/user_model.dart';
-import 'package:money_mate/services/api_services.dart';
 import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'dart:convert';
@@ -13,8 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  static String? type;
-  static int? userId;
+  static UserModel? userModel;
 
   const LoginScreen({super.key});
 
@@ -25,20 +24,11 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = true;
   UserModel? model;
-  @override
-  void initState() {
-    ApiServices(api: DioConsumer()).login().then((data) {
-      setState(() {
-        isLoading = false;
-        model = data;
-      });
-    });
-    super.initState();
-  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
+  
 
   String? _emailValidator(String? email) {
     if (email == null || email.isEmpty) return "Please enter your email";
@@ -73,23 +63,23 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      LoginScreen.userId = json["user"]["userid"];
-      LoginScreen.type = json["user"]["user_type"];
+      LoginScreen.userModel = UserModel.fromJson(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Login successful")));
         if (json["user"]["user_type"] == "customer") {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => NavigationScreen()));
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => NavigationScreen()),
+          );
         } else {
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => ComNavigationScreen()),
           );
         }
       } else {
+        log(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(json["error"] ?? "Login Failed")),
         );
@@ -211,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text("Don't have account?"),
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).push(
+                          Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
                               builder: (context) => RegisterScreen(),
                             ),

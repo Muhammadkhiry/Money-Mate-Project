@@ -45,9 +45,8 @@ app.*.map.json
 /android/app/release
 
 # database secret files
+
 .env
 
 # nmp modules
 api/node_modules/*
-.vscode/settings.json
-api/.env
