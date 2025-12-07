@@ -4,7 +4,9 @@ class EndPoint {
   static String login = "auth/login";
   static String addBill = "bills/add";
   static String customerBills = "bills/customer/";
-  // لسه ال get , patch
+  static String companyStats = "stats/company/";
+  static String customerStats = "stats/customer/";
+  // TODO: لسه ال get , patch
 }
 
 class ApiKey {

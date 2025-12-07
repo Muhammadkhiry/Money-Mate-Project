@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class StatisticsDropDownMenue extends StatelessWidget {
   final void Function(String?) onSelected;
 
-  const StatisticsDropDownMenue({super.key,required this.onSelected});
+  const StatisticsDropDownMenue({super.key, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,10 @@ class StatisticsDropDownMenue extends StatelessWidget {
         trailingIcon: Icon(Icons.keyboard_arrow_down, size: 30),
 
         dropdownMenuEntries: [
+          DropdownMenuEntry(value: "Today", label: "Today"),
+          DropdownMenuEntry(value: "This Week", label: "This Week"),
           DropdownMenuEntry(value: "This Month", label: "This Month"),
+          DropdownMenuEntry(value: "This Year", label: "This Year"),
         ],
 
         onSelected: onSelected,

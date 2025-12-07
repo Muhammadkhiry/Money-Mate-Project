@@ -84,4 +84,28 @@ class ApiServices {
       return null;
     }
   }
+
+  Future<Map<String, dynamic>> getCompanyStats({
+    required String period,
+    required String token,
+  }) async {
+    final response = await api.get(
+      "${EndPoint.companyStats}$period",
+      headers: {"Authorization": token},
+    );
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getCustomerStats({
+    required String period,
+    required String token,
+  }) async {
+    final response = await api.get(
+      "${EndPoint.customerStats}$period",
+      headers: {"Authorization": token},
+    );
+
+    return response;
+  }
 }

@@ -3,6 +3,9 @@ import 'package:money_mate/components/statistics_categories.dart';
 import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
 import 'package:money_mate/components/statistics_summary.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/models/user_model.dart';
+import 'package:money_mate/services/api_services.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -21,31 +24,79 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   List<double> weekly = [];
   Map<String, double> categories = {};
 
+  late ApiServices api;
+
   @override
   void initState() {
     super.initState();
+    api = ApiServices(api: DioConsumer());
     loadData(selectedMonth);
   }
 
   Future<void> loadData(String selectedMonth) async {
-    // TODO: api call
+    try {
+      String period = _mapPeriod(selectedMonth);
+      String token = UserModel.currentUser!.token;
 
-    // TODO: all data here comes from api call
-    // this is dummy data for implementing the ui
-    setState(() {
-      income = 2100;
-      expenses = 1240;
-      balance = 860;
+      Map<String, dynamic> stats;
 
-      weekly = [300, 380, 250, 200, 500, 220, 430];
+      if (UserModel.currentUser!.userType == "company") {
+        stats = await api.getCompanyStats(period: period, token: token);
+        debugPrint("STATS: $stats");
 
-      categories = {
-        "Food": 0.4,
-        "Shopping": 0.25,
-        "Transport": 0.15,
-        "Bills": 0.1,
-      };
-    });
+        setState(() {
+          income = (stats["total_paid"] ?? 0).toDouble();
+          expenses = (stats["total_unpaid"] ?? 0).toDouble();
+          balance = income - expenses;
+
+          weekly = [300, 380, 250, 200, 500, 220, 430];
+          categories = {
+            "Food": 0.4,
+            "Shopping": 0.25,
+            "Transport": 0.15,
+            "Bills": 0.1,
+          };
+        });
+      } else {
+        stats = await api.getCustomerStats(period: period, token: token);
+        debugPrint("STATS: $stats");
+
+        setState(() {
+          income = (stats["total_paid"] ?? 0).toDouble();
+          expenses = (stats["total_unpaid"] ?? 0).toDouble();
+          balance = (stats["total_balance"] ?? 0).toDouble();
+
+          weekly = [300, 380, 250, 200, 500, 220, 430];
+          categories = {
+            "Food": 0.4,
+            "Shopping": 0.25,
+            "Transport": 0.15,
+            "Bills": 0.1,
+          };
+        });
+      }
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error Loading Stats")));
+      });
+    }
+  }
+
+  String _mapPeriod(String value) {
+    switch (value) {
+      case "Today":
+        return "day";
+      case "This Week":
+        return "week";
+      case "This Month":
+        return "month";
+      case "This Year":
+        return "year";
+      default:
+        return "month";
+    }
   }
 
   @override
