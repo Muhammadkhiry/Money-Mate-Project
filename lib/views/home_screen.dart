@@ -174,7 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
-        title: Text(bill.companyName!),
+        title: Text(
+          LoginScreen.userModel!.userType == "customer"
+              ? bill.companyName!
+              : bill.customerName!,
+        ),
         subtitle: Text("${bill.billAmount} EGP"),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

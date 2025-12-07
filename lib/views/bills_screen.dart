@@ -131,85 +131,122 @@ class _BillsScreenState extends State<BillsScreen> {
   Widget build(BuildContext context) {
     return isLoading
         ? Center(child: CircularProgressIndicator())
-        : Column(
-            children: [
-              // -------------------------
-              // SEARCH BAR
-              // -------------------------
-              Padding(
-                padding: EdgeInsets.all(12),
-                child: TextField(
-                  controller: searchController,
-                  onChanged: _filterBills,
-                  decoration: InputDecoration(
-                    hintText: "Search bills...",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
+        : DefaultTabController(
+            length: 2,
+            child: Column(
+              children: [
+                // SEARCH
+                Padding(
+                  padding: EdgeInsets.all(12),
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: _filterBills,
+                    decoration: InputDecoration(
+                      hintText: "Search bills...",
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              Expanded(
-                child: ListView.builder(
-                  itemCount: displayedBills.length,
-                  itemBuilder: (context, index) {
-                    final bill = displayedBills[index];
+                // TABS (Paid / Unpaid)
+                TabBar(
+                  labelColor: Colors.black,
+                  indicatorColor: Colors.green,
+                  tabs: [
+                    Tab(text: "Paid"),
+                    Tab(text: "Unpaid"),
+                  ],
+                ),
 
-                    return GestureDetector(
-                      onTap: () => _showBillPopup(bill),
-                      child: Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 12,
-                        ),
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: bill.billStatus == 'paid'
-                                ? Colors.green
-                                : Colors.red.shade900,
-                          ),
-                          title: Text(
-                            widget.userType == "customer"
-                                ? bill.companyName ?? "No company"
-                                : bill.customerName ?? "No customer",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Text(
-                            bill.billStatus ?? "",
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                          trailing: Text(
-                            bill.billAmount!.toStringAsFixed(2),
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      // -------------------------
+                      // PAID LIST
+                      // -------------------------
+                      _buildBillsList(
+                        displayedBills
+                            .where((b) => b.billStatus == "paid")
+                            .toList(),
                       ),
-                    );
-                  },
+
+                      // -------------------------
+                      // UNPAID LIST
+                      // -------------------------
+                      _buildBillsList(
+                        displayedBills
+                            .where((b) => b.billStatus != "paid")
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildBillsList(List<Bill> bills) {
+    if (bills.isEmpty) {
+      return Center(
+        child: Text(
+          "No bills here",
+          style: TextStyle(color: Colors.grey, fontSize: 18),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: bills.length,
+      itemBuilder: (context, index) {
+        final bill = bills[index];
+        return GestureDetector(
+          onTap: () => _showBillPopup(bill),
+          child: Container(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 6,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: bill.billStatus == 'paid'
+                    ? Colors.green
+                    : Colors.red.shade900,
+              ),
+              title: Text(
+                widget.userType == "customer"
+                    ? bill.companyName ?? "No company"
+                    : bill.customerName ?? "No customer",
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+              ),
+              subtitle: Text(
+                bill.billStatus ?? "",
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+              trailing: Text(
+                bill.billAmount!.toStringAsFixed(2),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
                 ),
               ),
-            ],
-          );
+            ),
+          ),
+        );
+      },
+    );
   }
 }

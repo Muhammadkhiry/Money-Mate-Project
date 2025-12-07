@@ -3,6 +3,7 @@ import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/add_bill_screen.dart';
 import 'package:money_mate/views/bills_screen.dart';
+import 'package:money_mate/views/home_screen.dart';
 import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
 
@@ -16,6 +17,7 @@ class ComNavigationScreen extends StatefulWidget {
 class _ComNavigationScreenState extends State<ComNavigationScreen> {
   int currentIndex = 0;
   final List<Widget> screens = [
+    HomeScreen(user: LoginScreen.userModel),
     const StatisticsScreen(),
     BillsScreen(
       userType: LoginScreen.userModel!.userType,
@@ -23,45 +25,10 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
     ),
     AddBillScreen(),
   ];
-  final List<String> titles = ["Statistics", "Bills", "AddBills"];
+  final List<String> titles = ["Home", "Statistics", "Bills", "AddBills"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              decoration: BoxDecoration(color: Color(0xff4CAF50)),
-              accountName: Text(LoginScreen.userModel!.userName),
-              accountEmail: Text(LoginScreen.userModel!.email),
-              currentAccountPicture: CircleAvatar(
-                child: Text(
-                  LoginScreen.userModel!.userName[0].toUpperCase(),
-                  style: TextStyle(fontSize: 40.0),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.business),
-              title: Text('User Type: ${LoginScreen.userModel!.userType}'),
-            ),
-            Divider(),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Logout'),
-              onTap: () {
-                UserModel.clear();
-                Controllers.emailController.clear();
-                Controllers.passwordController.clear();
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-            ),
-          ],
-        ),
-      ),
       appBar: AppBar(
         backgroundColor: Color(0xff4CAF50),
         centerTitle: true,
@@ -87,6 +54,7 @@ class _ComNavigationScreenState extends State<ComNavigationScreen> {
           });
         },
         items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Statistics',
