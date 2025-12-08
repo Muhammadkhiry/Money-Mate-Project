@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/services/api_services.dart';
-import 'package:money_mate/views/login_screen.dart';
 
 class AddBillScreen extends StatefulWidget {
   const AddBillScreen({super.key});
@@ -18,35 +18,37 @@ class _AddBillScreenState extends State<AddBillScreen> {
   bool loading = false;
 
   Future<void> submit() async {
-  final amount = double.tryParse(amountController.text);
-  if (amount == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Invalid amount")),
+    final amount = double.tryParse(amountController.text);
+    if (amount == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Invalid amount")));
+      return;
+    }
+
+    setState(() => loading = true);
+
+    final result = await billService.createBill(
+      customerEmail: emailController.text,
+      billAmount: int.parse(amountController.text),
+      token: UserModel.currentUser!.token,
     );
-    return;
+
+    setState(() => loading = false);
+
+    if (result?.message != null && result?.billId != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Done! Bill ID = ${result?.billId}")),
+      );
+
+      emailController.clear();
+      amountController.clear();
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Failed to create bill")));
+    }
   }
-
-  setState(() => loading = true);
-
-  final result = await billService.createBill(
-    customerEmail: emailController.text,
-    billAmount: int.parse(amountController.text),
-    token: LoginScreen.userModel!.token,
-  );
-
-  setState(() => loading = false);
-
-  if (result?.message != null && result?.billId != null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Done! Bill ID = ${result?.billId}")),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Failed to create bill")),
-    );
-  }
-}
-
 
   @override
   Widget build(BuildContext context) {
