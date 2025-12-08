@@ -172,15 +172,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _billTile(Bill bill) {
+    final isCustomer = UserModel.currentUser!.userType == "customer";
+
+    final titleText = isCustomer
+        ? (bill.companyName ?? "Unknown Company")
+        : (bill.customerName ?? "Unknown Customer");
+
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
-        title: Text(
-          LoginScreen.userModel!.userType == "customer"
-              ? bill.companyName!
-              : bill.customerName!,
-        ),
+        title: Text(titleText),
         subtitle: Text("${bill.billAmount} EGP"),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),

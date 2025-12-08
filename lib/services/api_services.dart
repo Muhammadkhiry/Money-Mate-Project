@@ -49,6 +49,8 @@ class ApiServices {
         },
       );
       userModel = UserModel.fromJson(response);
+
+      UserModel.currentUser = userModel;
     } on ServerException catch (e) {
       log(e.toString());
     }

@@ -4,6 +4,7 @@ import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
 import 'package:money_mate/components/statistics_summary.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/services/api_services.dart';
 
@@ -35,14 +36,24 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Future<void> loadData(String selectedMonth) async {
     try {
+      debugPrint("USER TYPE: ${UserModel.currentUser?.userType}");
+      debugPrint("TOKEN: ${UserModel.currentUser?.token}");
+
       String period = _mapPeriod(selectedMonth);
+
+      debugPrint("PERIOD: $period");
+
       String token = UserModel.currentUser!.token;
 
       Map<String, dynamic> stats;
 
+      debugPrint(
+        "URL HIT: ${UserModel.currentUser!.userType == "company" ? "${EndPoint.baseURL}stats/company/$period" : "${EndPoint.baseURL}stats/customer/$period"}",
+      );
+
       if (UserModel.currentUser!.userType == "company") {
         stats = await api.getCompanyStats(period: period, token: token);
-        debugPrint("STATS: $stats");
+        debugPrint("STATS RECEIVED: $stats", wrapWidth: 1024);
 
         setState(() {
           income = (stats["total_paid"] ?? 0).toDouble();
@@ -59,7 +70,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         });
       } else {
         stats = await api.getCustomerStats(period: period, token: token);
-        debugPrint("STATS: $stats");
+        debugPrint("STATS RECEIVED: $stats", wrapWidth: 1024);
 
         setState(() {
           income = (stats["total_paid"] ?? 0).toDouble();
@@ -76,6 +87,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         });
       }
     } catch (e) {
+      debugPrint("API ERROR: $e");
+
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ScaffoldMessenger.of(
           context,
