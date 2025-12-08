@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:money_mate/components/statistics_categories.dart';
 import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
 import 'package:money_mate/components/statistics_summary.dart';
@@ -23,7 +22,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   double balance = 0;
 
   List<double> weekly = [];
-  Map<String, double> categories = {};
 
   late ApiServices api;
 
@@ -55,35 +53,36 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         stats = await api.getCompanyStats(period: period, token: token);
         debugPrint("STATS RECEIVED: $stats", wrapWidth: 1024);
 
+        final weeklyData = await api.getWeeklyChart(
+          userType: UserModel.currentUser!.userType,
+          token: token,
+        );
+
         setState(() {
           income = (stats["total_paid"] ?? 0).toDouble();
           expenses = (stats["total_unpaid"] ?? 0).toDouble();
+
+          // الشركة ملهاش total_balance في ال API
           balance = income - expenses;
 
-          weekly = [300, 380, 250, 200, 500, 220, 430];
-          categories = {
-            "Food": 0.4,
-            "Shopping": 0.25,
-            "Transport": 0.15,
-            "Bills": 0.1,
-          };
+          // weekly جاي جاهز List<double> من ال API service
+          weekly = weeklyData;
         });
       } else {
         stats = await api.getCustomerStats(period: period, token: token);
         debugPrint("STATS RECEIVED: $stats", wrapWidth: 1024);
+
+        final weeklyData = await api.getWeeklyChart(
+          userType: UserModel.currentUser!.userType,
+          token: token,
+        );
 
         setState(() {
           income = (stats["total_paid"] ?? 0).toDouble();
           expenses = (stats["total_unpaid"] ?? 0).toDouble();
           balance = (stats["total_balance"] ?? 0).toDouble();
 
-          weekly = [300, 380, 250, 200, 500, 220, 430];
-          categories = {
-            "Food": 0.4,
-            "Shopping": 0.25,
-            "Transport": 0.15,
-            "Bills": 0.1,
-          };
+          weekly = weeklyData;
         });
       }
     } catch (e) {
@@ -176,26 +175,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           const SizedBox(height: 15),
 
           StatisticsChart(weekly: weekly),
-          const SizedBox(height: 20),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Where Your Money Went",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 15),
-
-          StatisticsCategories(categories: categories),
         ],
       ),
     );
