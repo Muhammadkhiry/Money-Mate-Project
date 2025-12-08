@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/add_bill_screen.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
-import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
 
 class ComNavigationScreen extends StatefulWidget {
@@ -15,11 +15,11 @@ class ComNavigationScreen extends StatefulWidget {
 class _ComNavigationScreenState extends State<ComNavigationScreen> {
   int currentIndex = 0;
   final List<Widget> screens = [
-    HomeScreen(user: LoginScreen.userModel),
+    HomeScreen(user: UserModel.currentUser),
     const StatisticsScreen(),
     BillsScreen(
-      userType: LoginScreen.userModel!.userType,
-      token: LoginScreen.userModel!.token,
+      userType: UserModel.currentUser!.userType,
+      token: UserModel.currentUser!.token,
     ),
     AddBillScreen(),
   ];
