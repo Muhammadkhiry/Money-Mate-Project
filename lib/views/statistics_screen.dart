@@ -25,6 +25,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   late ApiServices api;
 
+  bool _isWeeklyLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +35,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> loadData(String selectedMonth) async {
+    setState(() => _isWeeklyLoading = true);
+
     try {
       debugPrint("USER TYPE: ${UserModel.currentUser?.userType}");
       debugPrint("TOKEN: ${UserModel.currentUser?.token}");
@@ -67,6 +71,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           // weekly جاي جاهز List<double> من ال API service
           weekly = weeklyData;
+
+          setState(() => _isWeeklyLoading = false);
         });
       } else {
         stats = await api.getCustomerStats(period: period, token: token);
@@ -83,6 +89,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           balance = (stats["total_balance"] ?? 0).toDouble();
 
           weekly = weeklyData;
+          _isWeeklyLoading = false;
         });
       }
     } catch (e) {
@@ -150,11 +157,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           const SizedBox(height: 15),
 
-          StatisticsSummary(
-            income: income,
-            expenses: expenses,
-            balance: balance,
-          ),
+          _isWeeklyLoading
+              ? SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.green),
+                  ),
+                )
+              : StatisticsSummary(
+                  income: income,
+                  expenses: expenses,
+                  balance: balance,
+                ),
           const SizedBox(height: 20),
 
           Padding(
@@ -174,7 +188,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
           const SizedBox(height: 15),
 
-          StatisticsChart(weekly: weekly),
+          _isWeeklyLoading
+              ? SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: CircularProgressIndicator(color: Colors.green),
+                  ),
+                )
+              : StatisticsChart(weekly: weekly),
         ],
       ),
     );
