@@ -26,7 +26,7 @@ router.get('/company/:period', verifyToken, async (req, res) => {
         const result = await pool.request()
             .input('company_id', sql.Int, company_id)
             .query(`
-        SELECT 
+        SELECT
           SUM(CASE WHEN bill_status = 'paid' THEN bill_amount ELSE 0 END) AS total_paid,
           SUM(CASE WHEN bill_status = 'unpaid' THEN bill_amount ELSE 0 END) AS total_unpaid
         FROM bill
@@ -63,8 +63,8 @@ router.get('/customer/:period', verifyToken, async (req, res) => {
         const result = await pool.request()
             .input('customer_id', sql.Int, customer_id)
             .query(`
-      SELECT 
-        c.salary - ISNULL((SELECT SUM(bill_amount) FROM bill WHERE customer_id = c.customer_id AND bill_status = 'paid'), 0) AS total_balance,
+      SELECT
+        ISNULL((SELECT SUM(bill_amount) FROM bill WHERE customer_id = c.customer_id AND bill_status = 'unpaid'), 0) * -1 AS total_balance,
         SUM(CASE WHEN b.bill_status = 'paid' THEN b.bill_amount ELSE 0 END) AS total_paid,
         SUM(CASE WHEN b.bill_status = 'unpaid' THEN b.bill_amount ELSE 0 END) AS total_unpaid
       FROM customer c
@@ -81,5 +81,60 @@ router.get('/customer/:period', verifyToken, async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+
+// WEEKLY CHART FOR CUSTOMER
+router.get('/customer/chart/weekly', verifyToken, async (req, res) => {
+    const customer_id = req.user.userid;
+
+    try {
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .input("customer_id", sql.Int, customer_id)
+            .query(`
+                SELECT
+                    DATENAME(weekday, created_at) AS day_name,
+                    SUM(bill_amount) AS amount
+                FROM bill
+                WHERE customer_id = @customer_id
+                AND bill_status = 'paid'
+                AND created_at >= DATEADD(week, -1, GETDATE())
+                GROUP BY DATENAME(weekday, created_at)
+            `);
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// WEEKLY CHART FOR COMPANY
+router.get('/company/chart/weekly', verifyToken, async (req, res) => {
+    const company_id = req.user.userid;
+
+    try {
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .input("company_id", sql.Int, company_id)
+            .query(`
+                SELECT
+                    DATENAME(weekday, created_at) AS day_name,
+                    SUM(bill_amount) AS amount
+                FROM bill
+                WHERE company_id = @company_id
+                AND bill_status = 'paid'
+                AND created_at >= DATEADD(week, -1, GETDATE())
+                GROUP BY DATENAME(weekday, created_at)
+            `);
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 module.exports = router;

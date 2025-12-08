@@ -49,6 +49,8 @@ class ApiServices {
         },
       );
       userModel = UserModel.fromJson(response);
+
+      UserModel.currentUser = userModel;
     } on ServerException catch (e) {
       log(e.toString());
     }
@@ -83,5 +85,63 @@ class ApiServices {
       print("Error creating bill: $e");
       return null;
     }
+  }
+
+  Future<Map<String, dynamic>> getCompanyStats({
+    required String period,
+    required String token,
+  }) async {
+    final response = await api.get(
+      "${EndPoint.companyStats}$period",
+      headers: {"Authorization": token},
+    );
+
+    return response;
+  }
+
+  Future<Map<String, dynamic>> getCustomerStats({
+    required String period,
+    required String token,
+  }) async {
+    final response = await api.get(
+      "${EndPoint.customerStats}$period",
+      headers: {"Authorization": token},
+    );
+
+    return response;
+  }
+
+  Future<List<double>> getWeeklyChart({
+    required String userType,
+    required String token,
+  }) async {
+    final response = await api.get(
+      "stats/$userType/chart/weekly",
+      headers: {"Authorization": token},
+    );
+
+    // ترتيب ثابت لأيام الأسبوع
+    final Map<String, double> ordered = {
+      "Monday": 0.0,
+      "Tuesday": 0.0,
+      "Wednesday": 0.0,
+      "Thursday": 0.0,
+      "Friday": 0.0,
+      "Saturday": 0.0,
+      "Sunday": 0.0,
+    };
+
+    // نعبي الداتا اللي جاية من الـ API
+    for (var row in response) {
+      final day = row["day_name"];
+      final amount = (row["amount"] ?? 0).toDouble();
+
+      if (ordered.containsKey(day)) {
+        ordered[day] = amount;
+      }
+    }
+
+    // نرجّع الأرقام بس بالترتيب (List<double>)
+    return ordered.values.toList();
   }
 }

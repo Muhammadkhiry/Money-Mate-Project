@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/models/bill_model.dart';
+import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/services/api_services.dart';
-import 'package:money_mate/views/login_screen.dart';
 
 class BillsScreen extends StatefulWidget {
   final String? userType, token;
@@ -110,7 +110,7 @@ class _BillsScreenState extends State<BillsScreen> {
     // Call API
     final success = await ApiServices(
       api: DioConsumer(),
-    ).payBill(bill.billId!, LoginScreen.userModel!.token);
+    ).payBill(bill.billId!, UserModel.currentUser!.token);
 
     if (success) {
       setState(() {
@@ -242,9 +242,9 @@ class _BillsScreenState extends State<BillsScreen> {
                 ),
               ),
               title: Text(
-                LoginScreen.userModel!.userType == "customer"
-                    ? bill.companyName!
-                    : bill.customerName!,
+                UserModel.currentUser!.userType == "customer"
+                    ? (bill.companyName ?? "Unknown")
+                    : (bill.customerName ?? "Unknown"),
               ),
               subtitle: Text("${bill.billAmount} EGP"),
               trailing: Container(

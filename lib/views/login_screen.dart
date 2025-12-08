@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/controllers/controllers.dart';
@@ -8,8 +10,6 @@ import 'package:money_mate/core/api/end_point.dart';
 import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:money_mate/views/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
-  
 
   String? _emailValidator(String? email) {
     if (email == null || email.isEmpty) return "Please enter your email";
@@ -63,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       final json = jsonDecode(response.body);
-      LoginScreen.userModel = UserModel.fromJson(jsonDecode(response.body));
+      UserModel.currentUser = UserModel.fromJson(jsonDecode(response.body));
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
@@ -81,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         log(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(json["message"] ?? "Login Failed")),
+          SnackBar(content: Text(json["error"] ?? "Login Failed")),
         );
       }
     } catch (e) {

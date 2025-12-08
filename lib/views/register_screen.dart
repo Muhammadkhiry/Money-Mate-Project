@@ -139,7 +139,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return "Please enter your salary";
     }
 
-    if (int.tryParse(salary) == null && int.tryParse(salary)! <= 0) {
+    if (int.tryParse(salary) == null || int.parse(salary) <= 0) {
       return "Please enter a valid salary";
     }
 
@@ -168,6 +168,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "com_type": _userType == "company" ? _companyTypeController.text : "",
       "registration_number": _userType == "company"
           ? _registrationNumberController.text
+          : "",
+      "salary": _userType == "customer"
+          ? int.parse(_salaryController.text)
           : "",
     };
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:money_mate/models/user_model.dart';
 import 'package:money_mate/views/bills_screen.dart';
 import 'package:money_mate/views/home_screen.dart';
-import 'package:money_mate/views/login_screen.dart';
 import 'package:money_mate/views/statistics_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
@@ -14,19 +14,24 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   int currentIndex = 0;
 
-  final List<Widget> screens = [
-    HomeScreen(user: LoginScreen.userModel),
-    const StatisticsScreen(),
-    BillsScreen(
-      userType: LoginScreen.userModel!.userType,
-      token: LoginScreen.userModel!.token,
-    ),
-  ];
-
-  final List<String> titles = ["Home", "Statistics", "Bills"];
-
   @override
   Widget build(BuildContext context) {
+
+    if (UserModel.currentUser == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final screens = [
+      HomeScreen(user: UserModel.currentUser),
+      const StatisticsScreen(),
+      BillsScreen(
+        userType: UserModel.currentUser!.userType,
+        token: UserModel.currentUser!.token,
+      ),
+    ];
+
+    final titles = ["Home", "Statistics", "Bills"];
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xff4CAF50),
