@@ -20,8 +20,23 @@ class StatisticsChart extends StatelessWidget {
       );
     }
 
+    // double maxValue = weekly.reduce((a, b) => a > b ? a : b);
+    // double maxY = ((maxValue / 200).ceil() * 200).toDouble();
+
     double maxValue = weekly.reduce((a, b) => a > b ? a : b);
-    double maxY = ((maxValue / 200).ceil() * 200).toDouble();
+
+    double interval;
+    if (maxValue <= 500) {
+      interval = 100;
+    } else if (maxValue <= 2000) {
+      interval = 500;
+    } else if (maxValue <= 10000) {
+      interval = 2000;
+    } else {
+      interval = (maxValue / 5).ceilToDouble();
+    }
+
+    double maxY = ((maxValue / interval).ceil() * interval);
 
     return SizedBox(
       height: 120,
@@ -35,7 +50,7 @@ class StatisticsChart extends StatelessWidget {
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
-              horizontalInterval: 200,
+              horizontalInterval: interval,
               getDrawingHorizontalLine: (value) =>
                   FlLine(color: Colors.grey.shade300, strokeWidth: 1),
             ),
@@ -62,7 +77,7 @@ class StatisticsChart extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 40,
-                  interval: 200,
+                  interval: interval,
                   getTitlesWidget: (value, meta) {
                     return Text(
                       "\$${value.toInt().toString()}",
