@@ -34,7 +34,10 @@ router.get('/company/:period', verifyToken, async (req, res) => {
         AND created_at >= ${startDateQuery}
       `);
 
-        res.json(result.recordset[0]);
+        // res.json(result.recordset[0]);
+
+        const row = result.recordset || { "total_paid": 0, "total_unpaid": 0 };
+        res.json(row);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
@@ -75,7 +78,11 @@ router.get('/customer/:period', verifyToken, async (req, res) => {
     `);
 
 
-        res.json(result.recordset[0]);
+        // res.json(result.recordset[0]);
+
+        const row = result.recordset[0] || { "total_paid": 0, "total_unpaid": 0, "balance": 0 };
+        res.json(row);
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });

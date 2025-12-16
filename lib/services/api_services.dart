@@ -96,7 +96,11 @@ class ApiServices {
       headers: {"Authorization": token},
     );
 
-    return response;
+    if (response == null) {
+      return {"total_paid": 0, "total_unpaid": 0, "balance": 0};
+    }
+
+    return Map<String, dynamic>.from(response);
   }
 
   Future<Map<String, dynamic>> getCustomerStats({
@@ -108,7 +112,11 @@ class ApiServices {
       headers: {"Authorization": token},
     );
 
-    return response;
+    if (response == null) {
+      return {"total_paid": 0, "total_unpaid": 0, "balance": 0};
+    }
+
+    return Map<String, dynamic>.from(response);
   }
 
   Future<List<double>> getWeeklyChart({
