@@ -1,13 +1,13 @@
-import 'dart:convert';
-import 'dart:developer';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/controllers/controllers.dart';
-import 'package:money_mate/core/api/end_point.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/user_model.dart';
+import 'package:money_mate/services/api_services.dart';
 import 'package:money_mate/views/com_navigation_screen.dart';
 import 'package:money_mate/views/navigation_screen.dart';
 import 'package:money_mate/views/register_screen.dart';
@@ -50,43 +50,34 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.login}");
     try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "email": Controllers.emailController.text,
-          "password": Controllers.passwordController.text,
-        }),
+      final api = ApiServices(api: DioConsumer());
+      final user = await api.login(
+        email: Controllers.emailController.text,
+        password: Controllers.passwordController.text,
       );
 
-      final json = jsonDecode(response.body);
-      UserModel.currentUser = UserModel.fromJson(jsonDecode(response.body));
+      UserModel.currentUser = user;
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Login successful")));
-        if (json["user"]["user_type"] == "customer") {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => NavigationScreen()),
-          );
-        } else {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => ComNavigationScreen()),
-          );
-        }
-      } else {
-        log(response.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(json["error"] ?? "Login Failed")),
-        );
-      }
-    } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Network Error")));
+      ).showSnackBar(SnackBar(content: Text("Login Successful")));
+
+      if (user.userType == "customer") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ComNavigationScreen()),
+        );
+      }
+    } on ServerException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.errorModel.errorMessage)));
     }
 
     setState(() => _isLoading = false);

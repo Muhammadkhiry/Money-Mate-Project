@@ -4,12 +4,14 @@ class StatisticsSummary extends StatelessWidget {
   final double income;
   final double expenses;
   final double balance;
+  final String userType;
 
   const StatisticsSummary({
     super.key,
     required this.income,
     required this.expenses,
     required this.balance,
+    required this.userType,
   });
 
   @override
@@ -28,20 +30,29 @@ class StatisticsSummary extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _summaryItem("Total Income", income),
-                _summaryItem("Total Expenses", expenses),
-                _summaryItem("Balance", balance),
-              ],
+              children: userType == "customer"
+                  ? [
+                      _summaryItem("Paid", income),
+                      _summaryItem("Unpaid", expenses),
+                    ]
+                  : [
+                      _summaryItem("Collected", income),
+                      _summaryItem("Pending", expenses),
+                      _summaryItem("Net Profit", balance),
+                    ],
             ),
             const SizedBox(height: 10),
-            LinearProgressIndicator(
-              value: income != 0 ? expenses / income : 0,
-              color: Color(0xff4CAF50),
-              backgroundColor: Colors.black26,
-              minHeight: 8,
-              borderRadius: BorderRadius.circular(4),
-            ),
+
+            if (userType == "company")
+              LinearProgressIndicator(
+                value: income + expenses != 0
+                    ? income / (income + expenses)
+                    : 0,
+                color: Color(0xff4CAF50),
+                backgroundColor: Colors.black26,
+                minHeight: 8,
+                borderRadius: BorderRadius.circular(4),
+              ),
           ],
         ),
       ),

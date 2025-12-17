@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:money_mate/components/statistics_chart.dart';
 import 'package:money_mate/components/statistics_drop_down_menue.dart';
+import 'package:money_mate/components/statistics_empty_state.dart';
 import 'package:money_mate/components/statistics_summary.dart';
 import 'package:money_mate/core/api/dio_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
@@ -72,7 +73,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           // weekly جاي جاهز List<double> من ال API service
           weekly = weeklyData;
 
-          setState(() => _isWeeklyLoading = false);
+          _isWeeklyLoading = false;
         });
       } else {
         stats = await api.getCustomerStats(period: period, token: token);
@@ -120,6 +121,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasSummaryData = UserModel.currentUser!.userType == "company"
+        ? (income != 0 || expenses != 0 || balance != 0)
+        : (income != 0 || expenses != 0);
+
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -164,10 +169,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                     child: CircularProgressIndicator(color: Colors.green),
                   ),
                 )
-              : StatisticsSummary(
+              : hasSummaryData
+              ? StatisticsSummary(
                   income: income,
                   expenses: expenses,
                   balance: balance,
+                  userType: UserModel.currentUser!.userType,
+                )
+              : const StatisticsEmptyState(
+                  message: "No summary data available",
                 ),
           const SizedBox(height: 20),
 

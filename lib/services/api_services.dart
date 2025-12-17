@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:money_mate/controllers/controllers.dart';
 import 'package:money_mate/core/api/api_consumer.dart';
 import 'package:money_mate/core/api/end_point.dart';
+import 'package:money_mate/core/errors/error_model.dart';
 import 'package:money_mate/core/errors/exceptions.dart';
 import 'package:money_mate/models/bill_model.dart';
 import 'package:money_mate/models/bill_response.dart';
@@ -39,20 +39,69 @@ class ApiServices {
 
   recentExpenses() async {}
 
-  login() async {
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
     try {
       final response = await api.post(
         EndPoint.login,
-        data: {
-          ApiKey.email: Controllers.emailController.text,
-          ApiKey.password: Controllers.passwordController.text,
-        },
+        data: {"email": email, "password": password},
       );
-      userModel = UserModel.fromJson(response);
 
-      UserModel.currentUser = userModel;
-    } on ServerException catch (e) {
-      log(e.toString());
+      if (response == null) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: "Network Error"),
+        );
+      }
+
+      return UserModel.fromJson(response);
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      final data = e.response?.data;
+
+      if (status == 404) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: "User not found"),
+        );
+      } else if (status == 401) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: "Incorrect password"),
+        );
+      } else if (status == 400) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: data["error"] ?? "Invalid data"),
+        );
+      }
+
+      throw ServerException(
+        errorModel: ErrorModel(errorMessage: "Network Error"),
+      );
+    }
+  }
+
+  Future<void> register(Map<String, dynamic> body) async {
+    try {
+      final response = await api.post(EndPoint.register, data: body);
+
+      if (response == null) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: "Network error"),
+        );
+      }
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      final data = e.response?.data;
+
+      if (status == 400) {
+        throw ServerException(
+          errorModel: ErrorModel(errorMessage: data["error"] ?? "Invalid data"),
+        );
+      }
+
+      throw ServerException(
+        errorModel: ErrorModel(errorMessage: "Network error"),
+      );
     }
   }
 
@@ -96,7 +145,11 @@ class ApiServices {
       headers: {"Authorization": token},
     );
 
-    return response;
+    if (response == null) {
+      return {"total_paid": 0, "total_unpaid": 0, "balance": 0};
+    }
+
+    return Map<String, dynamic>.from(response);
   }
 
   Future<Map<String, dynamic>> getCustomerStats({
@@ -108,7 +161,11 @@ class ApiServices {
       headers: {"Authorization": token},
     );
 
-    return response;
+    if (response == null) {
+      return {"total_paid": 0, "total_unpaid": 0, "balance": 0};
+    }
+
+    return Map<String, dynamic>.from(response);
   }
 
   Future<List<double>> getWeeklyChart({

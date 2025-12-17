@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   const {
     username, password, email, phone, user_address, user_type,
-    gender, salary, com_type, registration_number
+    gender, com_type, registration_number
   } = req.body;
 
   if (!username || !password || !email || !user_type) {
@@ -66,8 +66,7 @@ router.post('/register', async (req, res) => {
         await transaction.request()
           .input('customer_id', sql.Int, userId)
           .input('gender', sql.Char(1), gender || 'O')
-          .input('salary', sql.Int, salary || 0)
-          .query(`INSERT INTO customer (customer_id, gender, salary) VALUES (@customer_id, @gender, @salary)`);
+          .query(`INSERT INTO customer (customer_id, gender) VALUES (@customer_id, @gender)`);
       } else if (user_type === 'company') {
         await transaction.request()
           .input('company_id', sql.Int, userId)
@@ -110,7 +109,8 @@ router.post('/login', async (req, res) => {
     const user = result.recordset[0];
     const match = await bcrypt.compare(password, user.user_password);
 
-    if (!match) return res.status(401).json({ error: 'Invalid password' });
+    if (result.recordset.length === 0) return res.status(404).json({ error: 'Email not found' });
+    if (!match) return res.status(401).json({ error: 'Incorrect password' });
 
     // Generate JWT token
     const token = jwt.sign(

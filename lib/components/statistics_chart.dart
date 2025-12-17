@@ -1,5 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:money_mate/components/statistics_empty_state.dart';
+import 'package:money_mate/models/user_model.dart';
 
 class StatisticsChart extends StatelessWidget {
   final List<double> weekly;
@@ -8,20 +10,31 @@ class StatisticsChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (weekly.isEmpty) {
-      return Container(
-        height: 100,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.red[100],
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey),
-        ),
+    if (weekly.isEmpty || weekly.every((v) => v == 0)) {
+      return StatisticsEmptyState(
+        message: UserModel.currentUser!.userType == "customer"
+            ? "No expenses records for this period"
+            : "No billing activities for this period",
       );
     }
 
+    // double maxValue = weekly.reduce((a, b) => a > b ? a : b);
+    // double maxY = ((maxValue / 200).ceil() * 200).toDouble();
+
     double maxValue = weekly.reduce((a, b) => a > b ? a : b);
-    double maxY = ((maxValue / 200).ceil() * 200).toDouble();
+
+    double interval;
+    if (maxValue <= 500) {
+      interval = 100;
+    } else if (maxValue <= 2000) {
+      interval = 500;
+    } else if (maxValue <= 10000) {
+      interval = 2000;
+    } else {
+      interval = (maxValue / 5).ceilToDouble();
+    }
+
+    double maxY = ((maxValue / interval).ceil() * interval);
 
     return SizedBox(
       height: 120,
@@ -35,7 +48,7 @@ class StatisticsChart extends StatelessWidget {
             gridData: FlGridData(
               show: true,
               drawVerticalLine: false,
-              horizontalInterval: 200,
+              horizontalInterval: interval,
               getDrawingHorizontalLine: (value) =>
                   FlLine(color: Colors.grey.shade300, strokeWidth: 1),
             ),
@@ -62,7 +75,7 @@ class StatisticsChart extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   reservedSize: 40,
-                  interval: 200,
+                  interval: interval,
                   getTitlesWidget: (value, meta) {
                     return Text(
                       "\$${value.toInt().toString()}",

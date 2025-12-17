@@ -34,7 +34,10 @@ router.get('/company/:period', verifyToken, async (req, res) => {
         AND created_at >= ${startDateQuery}
       `);
 
-        res.json(result.recordset[0]);
+        // res.json(result.recordset[0]);
+
+        const row = result.recordset || { "total_paid": 0, "total_unpaid": 0 };
+        res.json(row);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
@@ -71,11 +74,15 @@ router.get('/customer/:period', verifyToken, async (req, res) => {
       LEFT JOIN bill b ON c.customer_id = b.customer_id
       WHERE c.customer_id = @customer_id
       AND (b.created_at >= ${startDateQuery} OR b.created_at IS NULL)
-      GROUP BY c.customer_id, c.salary
+      GROUP BY c.customer_id
     `);
 
 
-        res.json(result.recordset[0]);
+        // res.json(result.recordset[0]);
+
+        const row = result.recordset[0] || { "total_paid": 0, "total_unpaid": 0, "balance": 0 };
+        res.json(row);
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
