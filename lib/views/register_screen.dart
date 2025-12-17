@@ -1,13 +1,14 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:money_mate/components/logging_button.dart';
 import 'package:money_mate/components/logging_text_field.dart';
 import 'package:money_mate/components/radio_list_group.dart';
-import 'package:money_mate/core/api/end_point.dart';
+import 'package:money_mate/core/api/dio_consumer.dart';
+import 'package:money_mate/core/errors/exceptions.dart';
+import 'package:money_mate/services/api_services.dart';
 import 'package:money_mate/views/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -151,11 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     setState(() => _isLoading = true);
 
-    // تحويل الـ gender لـ حرف واحد لو userType هو customer
-    String genderValue = "";
-    if (_userType == "customer") {
-      genderValue = _gender == "male" ? "M" : "F";
-    }
+    final api = ApiServices(api: DioConsumer());
 
     final body = {
       "username": _usernameController.text,
@@ -164,47 +161,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "phone": _phoneNumber,
       "user_address": _addressController.text,
       "user_type": _userType,
-      "gender": genderValue,
+      "gender": _userType == "customer" ? (_gender == "male" ? "M" : "F") : "",
       "com_type": _userType == "company" ? _companyTypeController.text : "",
       "registration_number": _userType == "company"
           ? _registrationNumberController.text
           : "",
-      "salary": _userType == "customer"
-          ? int.parse(_salaryController.text)
-          : "",
     };
 
-    debugPrint("Register body: ${jsonEncode(body)}"); // للتأكد قبل الإرسال
-
-    final url = Uri.parse("http://10.0.2.2:3000/api/${EndPoint.register}");
-
     try {
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(body),
+      await api.register(body);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account created successfully")),
       );
 
-      final json = jsonDecode(response.body);
-
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Account created successfully")),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(json["error"] ?? "Registration Failed")),
-        );
-      }
-    } catch (e) {
-      debugPrint("Registration error: $e");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } on ServerException catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Network Error")));
+      ).showSnackBar(SnackBar(content: Text(e.errorModel.errorMessage)));
     }
 
     setState(() => _isLoading = false);
