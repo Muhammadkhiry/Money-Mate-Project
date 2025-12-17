@@ -74,7 +74,7 @@ router.get('/customer/:period', verifyToken, async (req, res) => {
       LEFT JOIN bill b ON c.customer_id = b.customer_id
       WHERE c.customer_id = @customer_id
       AND (b.created_at >= ${startDateQuery} OR b.created_at IS NULL)
-      GROUP BY c.customer_id, c.salary
+      GROUP BY c.customer_id
     `);
 
 

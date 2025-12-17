@@ -30,7 +30,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _companyTypeController = TextEditingController();
   final TextEditingController _registrationNumberController =
       TextEditingController();
-  final TextEditingController _salaryController = TextEditingController();
   bool _isLoading = false;
   String _userType = "customer";
   String _gender = "male";
@@ -130,18 +129,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? _companyNumberValidator(String? number) {
     if (number == null || number.isEmpty) {
       return "Please enter your company number";
-    }
-
-    return null;
-  }
-
-  String? _salaryValidator(String? salary) {
-    if (salary == null || salary.isEmpty) {
-      return "Please enter your salary";
-    }
-
-    if (int.tryParse(salary) == null || int.parse(salary) <= 0) {
-      return "Please enter a valid salary";
     }
 
     return null;
@@ -380,26 +367,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           setState(() => _gender = value.toString()),
                     ),
                     SizedBox(height: 20),
-
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Salary",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    LoggingTextField(
-                      hint: "Salary",
-                      controller: _salaryController,
-                      isSecured: false,
-                      validator: _salaryValidator,
-                      keyboardType: TextInputType.number,
-                    ),
                   ],
 
                   if (_userType == "company") ...[
